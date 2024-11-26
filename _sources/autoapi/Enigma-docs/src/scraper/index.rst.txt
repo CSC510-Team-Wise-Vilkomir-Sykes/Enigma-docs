@@ -1,0 +1,43 @@
+Enigma-docs.src.scraper
+=======================
+
+.. py:module:: Enigma-docs.src.scraper
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   Enigma-docs.src.scraper.get_chart_links
+   Enigma-docs.src.scraper.scrape_chart
+   Enigma-docs.src.scraper.initial_scrape
+   Enigma-docs.src.scraper.update_charts
+
+
+Module Contents
+---------------
+
+.. py:function:: get_chart_links(main_url='https://www.billboard.com/charts/')
+
+   Scrapes the main Billboard charts page to retrieve all chart links.
+
+
+.. py:function:: scrape_chart(chart_link)
+
+   Scrapes a single chart page and returns a list of song dictionaries.
+
+
+.. py:function:: initial_scrape()
+   :async:
+
+
+   Performs an initial scrape to fill the database with all charts.
+
+
+.. py:function:: update_charts()
+
+   Regular update function that scrapes all current charts without clearing
+   the database.
+
+

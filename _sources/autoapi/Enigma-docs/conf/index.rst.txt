@@ -1,0 +1,111 @@
+Enigma-docs.conf
+================
+
+.. py:module:: Enigma-docs.conf
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   Enigma-docs.conf.project
+   Enigma-docs.conf.copyright
+   Enigma-docs.conf.author
+   Enigma-docs.conf.version
+   Enigma-docs.conf.release
+   Enigma-docs.conf.extensions
+   Enigma-docs.conf.templates_path
+   Enigma-docs.conf.source_suffix
+   Enigma-docs.conf.master_doc
+   Enigma-docs.conf.language
+   Enigma-docs.conf.exclude_patterns
+   Enigma-docs.conf.pygments_style
+   Enigma-docs.conf.html_theme
+   Enigma-docs.conf.html_static_path
+   Enigma-docs.conf.htmlhelp_basename
+   Enigma-docs.conf.latex_elements
+   Enigma-docs.conf.latex_documents
+   Enigma-docs.conf.man_pages
+   Enigma-docs.conf.texinfo_documents
+   Enigma-docs.conf.epub_title
+   Enigma-docs.conf.epub_exclude_files
+
+
+Module Contents
+---------------
+
+.. py:data:: project
+   :value: 'Enigma'
+
+
+.. py:data:: copyright
+   :value: '2024, Gwen Mason, Yi Zhang, Kevin Dai'
+
+
+.. py:data:: author
+   :value: 'Gwen Mason, Yi Zhang, Kevin Dai'
+
+
+.. py:data:: version
+   :value: ''
+
+
+.. py:data:: release
+   :value: '3.0.0'
+
+
+.. py:data:: extensions
+   :value: []
+
+
+.. py:data:: templates_path
+   :value: ['_templates']
+
+
+.. py:data:: source_suffix
+   :value: '.rst'
+
+
+.. py:data:: master_doc
+   :value: 'index'
+
+
+.. py:data:: language
+   :value: None
+
+
+.. py:data:: exclude_patterns
+   :value: ['_build', 'Thumbs.db', '.DS_Store']
+
+
+.. py:data:: pygments_style
+   :value: None
+
+
+.. py:data:: html_theme
+   :value: 'alabaster'
+
+
+.. py:data:: html_static_path
+   :value: ['_static']
+
+
+.. py:data:: htmlhelp_basename
+   :value: 'Enigmadoc'
+
+
+.. py:data:: latex_elements
+
+.. py:data:: latex_documents
+
+.. py:data:: man_pages
+
+.. py:data:: texinfo_documents
+
+.. py:data:: epub_title
+
+.. py:data:: epub_exclude_files
+   :value: ['search.html']
+
+

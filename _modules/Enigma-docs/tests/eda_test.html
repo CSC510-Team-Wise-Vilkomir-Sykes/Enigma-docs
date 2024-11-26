@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enigma-docs.tests.eda_test &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Enigma-docs.tests.eda_test</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">src.eda</span> <span class="kn">import</span> <span class="n">get_top_songs</span><span class="p">,</span> <span class="n">get_top_artists</span><span class="p">,</span> <span class="n">get_longest_charting_songs</span>
+
+
+<div class="viewcode-block" id="TestEDA">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA">[docs]</a>
+<span class="k">class</span> <span class="nc">TestEDA</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestEDA.setUp">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;:memory:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_test_data</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.tearDown">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.create_test_data">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.create_test_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_test_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            CREATE TABLE songs (</span>
+<span class="s1">                title TEXT,</span>
+<span class="s1">                artist TEXT,</span>
+<span class="s1">                chart_name TEXT,</span>
+<span class="s1">                rank INTEGER,</span>
+<span class="s1">                weeks_on_chart INTEGER</span>
+<span class="s1">            )</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            INSERT INTO songs (title, artist, chart_name, rank, weeks_on_chart)</span>
+<span class="s1">            VALUES (?, ?, ?, ?, ?)</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;Song1&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist1&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song2&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist2&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song3&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist3&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart3&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song4&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist1&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart4&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song5&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist2&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart5&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song6&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist4&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart6&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song7&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist5&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart7&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song8&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist6&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song9&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist7&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart9&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song10&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist8&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart10&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song11&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist9&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart11&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Song12&#39;</span><span class="p">,</span> <span class="s1">&#39;Artist10&#39;</span><span class="p">,</span> <span class="s1">&#39;Chart12&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_songs">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_songs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_songs returns the top 10 songs by weeks on chart.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;title&#39;</span><span class="p">],</span> <span class="s1">&#39;Song12&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_artists">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_artists">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_artists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_artists returns the top 10 artists by number of songs.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_artists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;artist&#39;</span><span class="p">],</span> <span class="s1">&#39;Artist2&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_longest_charting_songs">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_longest_charting_songs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_longest_charting_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_longest_charting_songs returns the top 10 songs by weeks on chart.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_longest_charting_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;title&#39;</span><span class="p">],</span> <span class="s1">&#39;Song12&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_songs_empty">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_songs_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_songs_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_songs returns an empty DataFrame when there are no songs.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;DELETE FROM songs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_artists_empty">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_artists_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_artists_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_artists returns an empty DataFrame when there are no songs.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;DELETE FROM songs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_artists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_longest_charting_songs_empty">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_longest_charting_songs_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_longest_charting_songs_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_longest_charting_songs returns an empty</span>
+<span class="sd">        DataFrame when there are no songs.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;DELETE FROM songs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_longest_charting_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_songs_no_rank_1">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_songs_no_rank_1">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_songs_no_rank_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_songs returns an empty DataFrame when no songs have rank 1.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;UPDATE songs SET rank = 2 WHERE rank = 1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_artists_no_songs">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_artists_no_songs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_artists_no_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_artists does not include an artist with no songs.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;DELETE FROM songs WHERE artist = &quot;Artist1&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_artists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">(</span><span class="s1">&#39;Artist1&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;artist&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_longest_charting_songs_no_weeks">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_longest_charting_songs_no_weeks">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_longest_charting_songs_no_weeks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_longest_charting_songs returns an empty DataFrame when all songs have 0</span>
+<span class="sd">        weeks on chart.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;UPDATE songs SET weeks_on_chart = 0&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_longest_charting_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestEDA.test_get_top_songs_multiple_charts">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/eda_test/index.html#Enigma-docs.tests.eda_test.TestEDA.test_get_top_songs_multiple_charts">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_top_songs_multiple_charts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that get_top_songs returns the top 10 songs when there are multiple charts.&quot;&quot;&quot;</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            INSERT INTO songs (title, artist, chart_name, rank, weeks_on_chart)</span>
+<span class="s1">            VALUES (&quot;Song13&quot;, &quot;Artist11&quot;, &quot;Chart13&quot;, 1, 45)</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_top_songs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;Song13&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

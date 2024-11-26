@@ -1,0 +1,49 @@
+Enigma-docs.tests.test_recommend
+================================
+
+.. py:module:: Enigma-docs.tests.test_recommend
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   Enigma-docs.tests.test_recommend.recommend_cog
+   Enigma-docs.tests.test_recommend.songs_df
+   Enigma-docs.tests.test_recommend.test_generate_recommendations_zero_songs
+   Enigma-docs.tests.test_recommend.test_generate_recommendations_one_song
+   Enigma-docs.tests.test_recommend.test_artist_limit_in_recommendations
+   Enigma-docs.tests.test_recommend.test_exclude_selected_artists
+   Enigma-docs.tests.test_recommend.test_recommendation_uniqueness
+   Enigma-docs.tests.test_recommend.test_insufficient_songs_for_recommendations
+   Enigma-docs.tests.test_recommend.test_max_recommendation_limit
+   Enigma-docs.tests.test_recommend.map_emojis_to_songs
+   Enigma-docs.tests.test_recommend.test_emoji_song_mapping
+
+
+Module Contents
+---------------
+
+.. py:function:: recommend_cog()
+
+.. py:function:: songs_df()
+
+.. py:function:: test_generate_recommendations_zero_songs(recommend_cog, songs_df)
+
+.. py:function:: test_generate_recommendations_one_song(mock_get_all_songs, recommend_cog, songs_df)
+
+.. py:function:: test_artist_limit_in_recommendations(recommend_cog, songs_df)
+
+.. py:function:: test_exclude_selected_artists(recommend_cog, songs_df)
+
+.. py:function:: test_recommendation_uniqueness(recommend_cog, songs_df)
+
+.. py:function:: test_insufficient_songs_for_recommendations(mock_get_all_songs, recommend_cog, songs_df)
+
+.. py:function:: test_max_recommendation_limit(recommend_cog, songs_df)
+
+.. py:function:: map_emojis_to_songs(song_list)
+
+.. py:function:: test_emoji_song_mapping()
+

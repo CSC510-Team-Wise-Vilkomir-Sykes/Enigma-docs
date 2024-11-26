@@ -1,0 +1,25 @@
+Enigma-docs.src.eda
+===================
+
+.. py:module:: Enigma-docs.src.eda
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   Enigma-docs.src.eda.get_top_songs
+   Enigma-docs.src.eda.get_top_artists
+   Enigma-docs.src.eda.get_longest_charting_songs
+
+
+Module Contents
+---------------
+
+.. py:function:: get_top_songs(conn)
+
+.. py:function:: get_top_artists(conn)
+
+.. py:function:: get_longest_charting_songs(conn)
+

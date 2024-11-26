@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Enigma-docs.src.bot_state &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Enigma-docs.src.database" href="../database/index.html" />
+    <link rel="prev" title="Enigma-docs.src" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-Enigma-docs.src.bot_state">
+<span id="enigma-docs-src-bot-state"></span><h1>Enigma-docs.src.bot_state<a class="headerlink" href="#module-Enigma-docs.src.bot_state" title="Link to this heading">¶</a></h1>
+<p>bot_state.py</p>
+<p>This module defines the <cite>BotState</cite> class, which manages the shared state of the Discord bot’s music playback,
+including the song queue, playback status, and logging.</p>
+<p><strong>Attributes</strong>:
+- <cite>song_queue</cite> (list): A queue of songs selected by the user.
+- <cite>current_song_playing</cite> (Song): The currently playing song.
+- <cite>_is_paused</cite> (bool): Indicates whether playback is paused.
+- <cite>_is_looping</cite> (bool): Indicates whether looping mode is enabled.
+- <cite>logger</cite> (logging.Logger): Logger instance for tracking bot commands and actions.
+- <cite>volume</cite> (float): Playback volume (default: 50%).</p>
+<p><strong>Why</strong>:
+Centralizes the bot’s state and playback control, making it easy to manage music-related operations and
+log actions consistently.</p>
+<p><strong>How</strong>:
+- Use class-level methods to interact with shared attributes and perform actions like pause, unpause, stop, and volume control.
+- Log user interactions with commands and playback.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Enigma-docs.src.bot_state.BotState" title="Enigma-docs.src.bot_state.BotState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BotState</span></code></a></p></td>
+<td><p>Manages the shared state and playback control of the Discord bot.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Enigma-docs.src.bot_state.</span></span><span class="sig-name descname"><span class="pre">BotState</span></span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState" title="Link to this definition">¶</a></dt>
+<dd><p>Manages the shared state and playback control of the Discord bot.</p>
+<p><strong>Why</strong>: Provides centralized control over the bot’s music operations, ensuring consistent state management
+and logging across commands and events.</p>
+<p><strong>How</strong>:
+- Use methods like <cite>pause</cite>, <cite>unpause</cite>, and <cite>stop</cite> to manage playback.
+- Adjust settings such as volume or looping mode using class-level attributes and methods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.song_queue">
+<span class="sig-name descname"><span class="pre">song_queue</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.song_queue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.song_queue" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.current_song_playing">
+<span class="sig-name descname"><span class="pre">current_song_playing</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.current_song_playing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.current_song_playing" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState._is_paused">
+<span class="sig-name descname"><span class="pre">_is_paused</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState._is_paused"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState._is_paused" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState._is_looping">
+<span class="sig-name descname"><span class="pre">_is_looping</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState._is_looping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState._is_looping" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.logger" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.volume" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.log_command">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.log_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.log_command" title="Link to this definition">¶</a></dt>
+<dd><p>Logs a command action with the specified message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<em>Context</em>) – The context of the command, used to access author and command name.</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – The message to log, providing additional details.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Why</strong>: Keeps track of user commands and their outcomes for debugging and auditing purposes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.log_and_send">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_and_send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.log_and_send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.log_and_send" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Async<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p>Sends a message to the user and logs the command action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<em>Context</em>) – The context of the command, used for logging and sending messages.</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – The message to send and log.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Why</strong>: Ensures consistent communication with users while maintaining logs for actions taken.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.is_in_use">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_in_use</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.is_in_use"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.is_in_use" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if a song is currently playing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if a song is playing, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Determines whether the bot is active in playing music.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.is_paused">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_paused</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.is_paused"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.is_paused" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if playback is paused.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if playback is paused, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Provides the bot’s current playback state for decision-making in commands.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.is_in_voice_channel">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_in_voice_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voice_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.is_in_voice_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.is_in_voice_channel" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if the bot is connected to a voice channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>voice_client</strong> (<em>VoiceClient</em>) – The Discord voice client instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the bot is connected to a voice channel, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Ensures that playback operations only occur when the bot is in a valid voice channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.pause">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voice_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.pause"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.pause" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Pauses playback if a song is currently playing and the bot is connected</p>
+</div></blockquote>
+<p>to a voice channel.</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">param voice_client<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The Discord voice client instance.</p>
+</dd>
+<dt class="field-even">type voice_client<span class="colon">:</span></dt>
+<dd class="field-even"><p>VoiceClient</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Temporarily halts music playback without clearing the queue or playback state.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.unpause">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unpause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voice_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.unpause"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.unpause" title="Link to this definition">¶</a></dt>
+<dd><p>Resumes playback if paused and the bot is connected to a voice channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>voice_client</strong> (<em>VoiceClient</em>) – The Discord voice client instance.</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Restarts playback after a pause, maintaining the playback state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.stop">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voice_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stops playback and resets playback-related attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>voice_client</strong> (<em>VoiceClient</em>) – The Discord voice client instance.</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Ends playback and clears the current state when the bot leaves or stops music.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.is_looping">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_looping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.is_looping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.is_looping" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if the bot is in looping mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if looping is enabled, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Identifies if the current song will be replayed after finishing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.set_is_looping">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_is_looping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_looping</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.set_is_looping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.set_is_looping" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the looping state of the bot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>is_looping</strong> (<em>bool</em>) – The new looping state to set.</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Toggles looping mode for the currently playing song.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.set_volume">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voice_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.set_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.set_volume" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the playback volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voice_client</strong> (<em>VoiceClient</em>) – The Discord voice client instance.</p></li>
+<li><p><strong>volume</strong> (<em>float</em>) – The new volume level (0.0 to 1.0).</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Why</strong>: Provides volume control for playback, ensuring user preferences are met.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Enigma-docs.src.bot_state.BotState.get_volume">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/bot_state.html#BotState.get_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.bot_state.BotState.get_volume" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the current playback volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current volume level (0.0 to 1.0).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p><strong>Why</strong>: Allows users to view the current volume level for playback.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../conf/index.html">conf</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Enigma-docs</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">API Reference</a><ul>
+  <li><a href="../../index.html">Enigma-docs</a><ul>
+  <li><a href="../index.html">Enigma-docs.src</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Enigma-docs.src</a></li>
+      <li>Next: <a href="../database/index.html" title="next chapter">Enigma-docs.src.database</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../../_sources/autoapi/Enigma-docs/src/bot_state/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

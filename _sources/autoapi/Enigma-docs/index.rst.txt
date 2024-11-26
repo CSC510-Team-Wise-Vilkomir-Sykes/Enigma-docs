@@ -1,0 +1,20 @@
+Enigma-docs
+===========
+
+.. py:module:: Enigma-docs
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/Enigma-docs/bot/index
+   /autoapi/Enigma-docs/conf/index
+   /autoapi/Enigma-docs/database/index
+   /autoapi/Enigma-docs/setup/index
+   /autoapi/Enigma-docs/src/index
+   /autoapi/Enigma-docs/tests/index
+
+

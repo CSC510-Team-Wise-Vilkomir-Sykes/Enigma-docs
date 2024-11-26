@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enigma-docs.tests.preload_songs_test &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Enigma-docs.tests.preload_songs_test</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">AsyncMock</span>
+<span class="kn">from</span> <span class="nn">src.song_queue_cog</span> <span class="kn">import</span> <span class="n">SongQueueCog</span>  <span class="c1"># Adjust the import path as necessary</span>
+<span class="kn">from</span> <span class="nn">src.bot_state</span> <span class="kn">import</span> <span class="n">BotState</span>
+<span class="kn">from</span> <span class="nn">src.song</span> <span class="kn">import</span> <span class="n">Song</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<div class="viewcode-block" id="TestPreloadSongs">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs">[docs]</a>
+<span class="k">class</span> <span class="nc">TestPreloadSongs</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">IsolatedAsyncioTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestPreloadSongs.setUp">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.setUp">[docs]</a>
+	<span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="c1"># Initialize a mock bot and cog</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cog</span> <span class="o">=</span> <span class="n">SongQueueCog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">)</span>
+
+		<span class="c1"># Mock the BotState.song_queue</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="c1"># Mock the logger and log_and_send</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+
+		<span class="c1"># Mock ytdl.extract_info</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">patcher</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;src.song_queue_cog.ytdl.extract_info&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patcher</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.tearDown">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.tearDown">[docs]</a>
+	<span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">patcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_songs_empty_queue">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_songs_empty_queue">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_songs_empty_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Ensure no preloading occurs when the queue is empty.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_single_song_success">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_single_song_success">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_single_song_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Preload a single song successfully.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">}]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Song 1&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_multiple_songs_less_than_limit">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_multiple_songs_less_than_limit">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_multiple_songs_less_than_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Preload multiple songs when queue size is below preload limit.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 2&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 3&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">}]},</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url2.com&quot;</span><span class="p">}]},</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url3.com&quot;</span><span class="p">}]}</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_multiple_songs_equal_to_limit">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_multiple_songs_equal_to_limit">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_multiple_songs_equal_to_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Preload songs exactly up to the preload limit.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Song </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">}]}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_multiple_songs_exceeding_limit">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_multiple_songs_exceeding_limit">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_multiple_songs_exceeding_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Ensure only up to the preload limit are preloaded when queue exceeds the limit.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Song </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">}]}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_some_songs_already_preloaded">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_some_songs_already_preloaded">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_some_songs_already_preloaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Preload only songs that haven&#39;t been preloaded yet.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url1.com&quot;</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 2&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 3&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://url3.com&quot;</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 4&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 5&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url2.com&quot;</span><span class="p">}]},</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url4.com&quot;</span><span class="p">}]},</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url5.com&quot;</span><span class="p">}]}</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url2.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url3.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url4.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url5.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_all_songs_already_preloaded">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_all_songs_already_preloaded">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_all_songs_already_preloaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Ensure no action is taken when all songs are already preloaded.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Song </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_song_failure">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_song_failure">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_song_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle and log errors when preloading a song fails.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 2&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">}]},</span>
+			<span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;YTDL error&quot;</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Error preloading song Song 2: YTDL error&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_invalid_track_name">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_invalid_track_name">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_invalid_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle cases where a song has an invalid or empty track name.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid track name&quot;</span><span class="p">)</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Error preloading song : Invalid track name&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_special_characters_in_track_name">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_special_characters_in_track_name">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_special_characters_in_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Successfully preload songs with special characters in their names.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Søng 🚀&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url_special.com&quot;</span><span class="p">}]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url_special.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Søng 🚀&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_unicode_characters_in_track_name">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_unicode_characters_in_track_name">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_unicode_characters_in_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Successfully preload songs with Unicode characters.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Søng 🚀✨&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url_unicode.com&quot;</span><span class="p">}]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url_unicode.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Søng 🚀✨&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_duplicate_track_names">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_duplicate_track_names">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_duplicate_track_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Ensure each song with duplicate names is preloaded independently.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Duplicate Song&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Duplicate Song&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">}]},</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url2.com&quot;</span><span class="p">}]}</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url2.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_non_youtube_urls">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_non_youtube_urls">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_non_youtube_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle preloading when songs might have non-YouTube URLs.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Non-YouTube Song&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://nonyoutube.com/audio&quot;</span><span class="p">}]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://nonyoutube.com/audio&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Non-YouTube Song&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_partial_success">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_partial_success">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_partial_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Some songs preload successfully while others fail.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 2&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 3&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">}]},</span>
+			<span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;YTDL failure&quot;</span><span class="p">),</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url3.com&quot;</span><span class="p">}]}</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url1.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url3.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Error preloading song Song 2: YTDL failure&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_large_track_names">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_large_track_names">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_large_track_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Successfully handle and preload songs with very long track names.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">long_track_name</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># Very long track name</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="n">long_track_name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://url_long.com&quot;</span><span class="p">}]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;http://url_long.com&quot;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ytsearch:</span><span class="si">{</span><span class="n">long_track_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_whitespace_track_name">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_whitespace_track_name">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_whitespace_track_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle songs whose track names consist only of whitespace.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;   &quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid track name&quot;</span><span class="p">)</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:   &quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Error preloading song    : Invalid track name&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_limit_enforcement">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_limit_enforcement">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_limit_enforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Strictly enforce the preload limit of 5 songs.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Song </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+			<span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">}]}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+		<span class="p">]</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;http://url</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.com&quot;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">call_count</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_non_list_song_queue">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_non_list_song_queue">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_non_list_song_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle scenarios where `BotState.song_queue` is not a list.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="s2">&quot;Not a list&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_no_entries_returned">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_no_entries_returned">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_no_entries_returned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle cases where extract_info returns no entries.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 1&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="c1"># Mock extract_info to return empty &#39;entries&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;entries&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="c1"># Assert that the song&#39;s URL remains None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+
+		<span class="c1"># Assert that extract_info was called once with the correct query</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Song 1&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+		<span class="c1"># Assert that log_and_send was called once with the appropriate error message</span>
+		<span class="n">expected_error_message</span> <span class="o">=</span> <span class="s2">&quot;Error preloading song Song 1: list index out of range&quot;</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">expected_error_message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestPreloadSongs.test_preload_unexpected_extract_info_structure">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/tests/preload_songs_test/index.html#Enigma-docs.tests.preload_songs_test.TestPreloadSongs.test_preload_unexpected_extract_info_structure">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">test_preload_unexpected_extract_info_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Handle cases where extract_info returns an unexpected structure.&quot;&quot;&quot;</span>
+		<span class="n">ctx</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="s2">&quot;Song 2&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+
+		<span class="c1"># Mock extract_info to return data without &#39;entries&#39; key</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{}</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cog</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="c1"># Assert that the song&#39;s URL remains None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+
+		<span class="c1"># Assert that extract_info was called once with the correct query</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">mock_extract_info</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;ytsearch:Song 2&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+		<span class="c1"># Assert that log_and_send was called once with the appropriate error message</span>
+		<span class="n">expected_error_message</span> <span class="o">=</span> <span class="s2">&quot;Error preloading song Song 2: &#39;entries&#39;&quot;</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">expected_error_message</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

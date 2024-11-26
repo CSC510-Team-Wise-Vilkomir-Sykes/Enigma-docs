@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Enigma-docs.src.utils &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Enigma-docs.tests" href="../../tests/index.html" />
+    <link rel="prev" title="Enigma-docs.src.song_queue_cog" href="../song_queue_cog/index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-Enigma-docs.src.utils">
+<span id="enigma-docs-src-utils"></span><h1>Enigma-docs.src.utils<a class="headerlink" href="#module-Enigma-docs.src.utils" title="Link to this heading">¶</a></h1>
+<p>helper_functions.py</p>
+<dl>
+<dt>What:</dt><dd><p>The <cite>helper_functions</cite> module provides essential utility functions that facilitate various operations within the Discord bot. These functions include searching for songs on YouTube and generating a random selection of songs for user polls. By abstracting these common tasks, the module ensures code reusability, readability, and maintainability across different components of the bot.</p>
+</dd>
+<dt>Why:</dt><dd><p>Efficiently managing song searches and generating randomized song selections are critical for delivering a seamless user experience in a music recommendation system. The <cite>helper_functions</cite> module streamlines these processes, enabling the bot to quickly fetch relevant song links and present diverse song options to users. This enhances the bot’s responsiveness and ensures that users receive timely and varied recommendations, thereby increasing engagement and satisfaction within the Discord community.</p>
+</dd>
+<dt>How:</dt><dd><ul class="simple">
+<li><p><strong>searchSong Function</strong>: Utilizes the <cite>youtubesearchpython</cite> library to search for a given song name on YouTube and retrieves the URL of the top result. This function is essential for fetching playable links that the bot can stream in voice channels.</p></li>
+<li><p><strong>random_25 Function</strong>: Leverages pandas to sample a diverse set of 25 songs from the available dataset. By grouping songs by genre and selecting a subset, it ensures a balanced and varied selection for user polls, promoting discovery across different musical styles.</p></li>
+<li><p><strong>Global Variable `all_songs`</strong>: Preprocesses the complete song dataset by selecting relevant columns (<cite>track_name</cite>, <cite>artist</cite>, <cite>genre</cite>) and storing them in a DataFrame. This prepared dataset serves as the foundation for the <cite>random_25</cite> function to generate randomized song selections efficiently.</p></li>
+</ul>
+</dd>
+<dt>Example Use Cases:</dt><dd><ol class="arabic simple">
+<li><p><strong>Song Playback</strong>: When a user requests to play a specific song, the bot uses <cite>searchSong</cite> to find the YouTube link and streams the audio in the voice channel.</p></li>
+<li><p><strong>Creating Polls for Recommendations</strong>: To generate a poll for user preferences, the bot invokes <cite>random_25</cite> to select a diverse set of songs, ensuring that users are exposed to a variety of genres and artists.</p></li>
+<li><p><strong>Automated Song Suggestions</strong>: The bot periodically suggests new songs to users by combining the functionalities of <cite>searchSong</cite> and <cite>random_25</cite>, enhancing the discovery of new music tailored to user tastes.</p></li>
+</ol>
+</dd>
+<dt>Classes:</dt><dd><p>None. This module exclusively contains standalone functions and global variables.</p>
+</dd>
+<dt>Functions:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>searchSong(name_song):</dt><dd><p>Searches for the specified song on YouTube and returns the URL of the top search result.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>random_25():</dt><dd><p>Generates and returns a randomized selection of 25 songs from the available dataset, ensuring diversity across different genres.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>youtubesearchpython: Facilitates searching for videos on YouTube based on query strings.</p></li>
+<li><p>pandas: Provides data manipulation and analysis capabilities, particularly for handling song datasets.</p></li>
+<li><p>src.get_all: Custom module that supplies access to the filtered songs dataset.</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><p>To utilize the helper functions within the Discord bot, import them as needed in other modules. For example, to search for a song and retrieve its YouTube URL:</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+from helper_functions import searchSong</p>
+<p>song_url = searchSong(“Shape of You”)
+print(song_url)  # Outputs the YouTube URL of the top search result for “Shape of You”
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p>To generate a random selection of 25 songs for a poll:</p>
+<p><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python
+from helper_functions import random_25</p>
+<p>poll_songs = random_25()
+print(poll_songs)
+# Outputs a DataFrame containing 25 randomly selected songs across different genres
+<a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>searchSong</cite> function currently retrieves only the top search result. For enhanced functionality, consider handling cases where no results are found or allowing the selection of multiple search results.</p></li>
+<li><p>The <cite>random_25</cite> function assumes that the <cite>filtered_songs</cite> function returns a DataFrame containing at least 25 songs across various genres. Ensure that the dataset is sufficiently large and diverse to support this operation.</p></li>
+<li><p>Error handling is minimal in these functions. For production use, incorporate try-except blocks to manage potential exceptions, such as network issues or unexpected data formats.</p></li>
+<li><p>The <cite>all_songs</cite> global variable preprocesses the song dataset upon module import. If the underlying data changes dynamically, consider updating this variable accordingly or converting it into a function to fetch the latest data as needed.</p></li>
+<li><p>Future enhancements could include adding parameters to <cite>random_25</cite> to allow for different sample sizes or genre-specific selections based on user preferences.</p></li>
+</ul>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Enigma-docs.src.utils.all_songs" title="Enigma-docs.src.utils.all_songs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_songs</span></code></a></p></td>
+<td><p>This global variable <cite>all_songs</cite> holds a DataFrame containing the track name, artist, and genre of all filtered songs. It serves as the data source for generating randomized song selections.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Enigma-docs.src.utils.searchSong" title="Enigma-docs.src.utils.searchSong"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchSong</span></code></a>(name_song)</p></td>
+<td><p>What:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Enigma-docs.src.utils.random_25" title="Enigma-docs.src.utils.random_25"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_25</span></code></a>()</p></td>
+<td><p>What:</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Enigma-docs.src.utils.searchSong">
+<span class="sig-prename descclassname"><span class="pre">Enigma-docs.src.utils.</span></span><span class="sig-name descname"><span class="pre">searchSong</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_song</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/utils.html#searchSong"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.utils.searchSong" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>What:</dt><dd><p>The <cite>searchSong</cite> function searches for a given song name on YouTube and retrieves the URL of the top search result. This URL can then be used to stream the song in a Discord voice channel.</p>
+</dd>
+<dt>Why:</dt><dd><p>Obtaining the direct YouTube link for a song is essential for streaming audio within Discord. By automating the search process, the bot can efficiently find and play the requested songs without manual intervention.</p>
+</dd>
+<dt>How:</dt><dd><ul class="simple">
+<li><p>Utilizes the <cite>VideosSearch</cite> class from the <cite>youtubesearchpython</cite> library to perform a search query for the specified song name.</p></li>
+<li><p>Limits the search results to the top entry.</p></li>
+<li><p>Extracts the URL of the first video in the search results.</p></li>
+<li><p>Returns the extracted YouTube link.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>python
+from helper_functions import searchSong</p>
+<p>song_url = searchSong(“Shape of You”)
+print(song_url)  # Outputs the YouTube URL for “Shape of You” by Ed Sheeran
+<a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name_song</strong> (<em>str</em>) – The name of the song to search for on YouTube.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The YouTube URL of the top search result for the specified song.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="Enigma-docs.src.utils.all_songs">
+<span class="sig-prename descclassname"><span class="pre">Enigma-docs.src.utils.</span></span><span class="sig-name descname"><span class="pre">all_songs</span></span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/utils.html#all_songs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.utils.all_songs" title="Link to this definition">¶</a></dt>
+<dd><p>This global variable <cite>all_songs</cite> holds a DataFrame containing the track name, artist, and genre of all filtered songs. It serves as the data source for generating randomized song selections.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Enigma-docs.src.utils.random_25">
+<span class="sig-prename descclassname"><span class="pre">Enigma-docs.src.utils.</span></span><span class="sig-name descname"><span class="pre">random_25</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/Enigma-docs/src/utils.html#random_25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Enigma-docs.src.utils.random_25" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>What:</dt><dd><p>The <cite>random_25</cite> function generates and returns a randomized selection of 25 songs from the available dataset. This selection is intended for creating user polls, ensuring that users are presented with a diverse and balanced set of song options.</p>
+</dd>
+<dt>Why:</dt><dd><p>Presenting a varied selection of songs across different genres enhances user engagement by catering to a wide range of musical preferences. By randomizing the selection, the function ensures fairness and prevents bias towards any particular genre or artist.</p>
+</dd>
+<dt>How:</dt><dd><ul class="simple">
+<li><p>Shuffles the <cite>all_songs</cite> DataFrame to randomize the order of songs.</p></li>
+<li><p>Groups the shuffled songs by genre and selects the top entry from each group to ensure genre diversity.</p></li>
+<li><p>Samples 25 songs from the grouped selection to create the final randomized list.</p></li>
+<li><p>Returns the resulting DataFrame containing the 25 selected songs.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a>python
+from helper_functions import random_25</p>
+<p>poll_songs = random_25()
+print(poll_songs)
+# Outputs a DataFrame with 25 randomly selected songs across various genres
+<a href="#id29"><span class="problematic" id="id30">``</span></a><a href="#id31"><span class="problematic" id="id32">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing 25 randomly selected songs with their track names, artists, and genres.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../conf/index.html">conf</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Enigma-docs</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">API Reference</a><ul>
+  <li><a href="../../index.html">Enigma-docs</a><ul>
+  <li><a href="../index.html">Enigma-docs.src</a><ul>
+      <li>Previous: <a href="../song_queue_cog/index.html" title="previous chapter">Enigma-docs.src.song_queue_cog</a></li>
+      <li>Next: <a href="../../tests/index.html" title="next chapter">Enigma-docs.tests</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../../_sources/autoapi/Enigma-docs/src/utils/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

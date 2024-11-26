@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enigma-docs.conf &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Enigma-docs.conf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Configuration file for the Sphinx documentation builder.</span>
+<span class="c1">#</span>
+<span class="c1"># This file does only contain a selection of the most common options. For a</span>
+<span class="c1"># full list see the documentation:</span>
+<span class="c1"># http://www.sphinx-doc.org/en/master/config</span>
+
+<span class="c1"># -- Path setup --------------------------------------------------------------</span>
+
+<span class="c1"># If extensions (or modules to document with autodoc) are in another directory,</span>
+<span class="c1"># add these directories to sys.path here. If the directory is relative to the</span>
+<span class="c1"># documentation root, use os.path.abspath to make it absolute, like shown here.</span>
+<span class="c1">#</span>
+<span class="c1"># import os</span>
+<span class="c1"># import sys</span>
+<span class="c1"># sys.path.insert(0, os.path.abspath(&#39;.&#39;))</span>
+
+
+<span class="c1"># -- Project information -----------------------------------------------------</span>
+
+<div class="viewcode-block" id="project">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.project">[docs]</a>
+<span class="n">project</span> <span class="o">=</span> <span class="s1">&#39;Enigma&#39;</span></div>
+
+<div class="viewcode-block" id="copyright">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.copyright">[docs]</a>
+<span class="n">copyright</span> <span class="o">=</span> <span class="s1">&#39;2024, Gwen Mason, Yi Zhang, Kevin Dai&#39;</span></div>
+
+<div class="viewcode-block" id="author">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.author">[docs]</a>
+<span class="n">author</span> <span class="o">=</span> <span class="s1">&#39;Gwen Mason, Yi Zhang, Kevin Dai&#39;</span></div>
+
+
+<span class="c1"># The short X.Y version</span>
+<div class="viewcode-block" id="version">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.version">[docs]</a>
+<span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
+
+<span class="c1"># The full version, including alpha/beta/rc tags</span>
+<div class="viewcode-block" id="release">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.release">[docs]</a>
+<span class="n">release</span> <span class="o">=</span> <span class="s1">&#39;3.0.0&#39;</span></div>
+
+
+
+<span class="c1"># -- General configuration ---------------------------------------------------</span>
+
+<span class="c1"># If your documentation needs a minimal Sphinx version, state it here.</span>
+<span class="c1">#</span>
+<span class="c1"># needs_sphinx = &#39;1.0&#39;</span>
+
+<span class="c1"># Add any Sphinx extension module names here, as strings. They can be</span>
+<span class="c1"># extensions coming with Sphinx (named &#39;sphinx.ext.*&#39;) or your custom</span>
+<span class="c1"># ones.</span>
+<div class="viewcode-block" id="extensions">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.extensions">[docs]</a>
+<span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">]</span></div>
+
+
+<span class="c1"># Add any paths that contain templates here, relative to this directory.</span>
+<div class="viewcode-block" id="templates_path">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.templates_path">[docs]</a>
+<span class="n">templates_path</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_templates&#39;</span><span class="p">]</span></div>
+
+
+<span class="c1"># The suffix(es) of source filenames.</span>
+<span class="c1"># You can specify multiple suffix as a list of string:</span>
+<span class="c1">#</span>
+<span class="c1"># source_suffix = [&#39;.rst&#39;, &#39;.md&#39;]</span>
+<div class="viewcode-block" id="source_suffix">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.source_suffix">[docs]</a>
+<span class="n">source_suffix</span> <span class="o">=</span> <span class="s1">&#39;.rst&#39;</span></div>
+
+
+<span class="c1"># The master toctree document.</span>
+<div class="viewcode-block" id="master_doc">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.master_doc">[docs]</a>
+<span class="n">master_doc</span> <span class="o">=</span> <span class="s1">&#39;index&#39;</span></div>
+
+
+<span class="c1"># The language for content autogenerated by Sphinx. Refer to documentation</span>
+<span class="c1"># for a list of supported languages.</span>
+<span class="c1">#</span>
+<span class="c1"># This is also used if you do content translation via gettext catalogs.</span>
+<span class="c1"># Usually you set &quot;language&quot; from the command line for these cases.</span>
+<div class="viewcode-block" id="language">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.language">[docs]</a>
+<span class="n">language</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<span class="c1"># List of patterns, relative to source directory, that match files and</span>
+<span class="c1"># directories to ignore when looking for source files.</span>
+<span class="c1"># This pattern also affects html_static_path and html_extra_path.</span>
+<div class="viewcode-block" id="exclude_patterns">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.exclude_patterns">[docs]</a>
+<span class="n">exclude_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_build&#39;</span><span class="p">,</span> <span class="s1">&#39;Thumbs.db&#39;</span><span class="p">,</span> <span class="s1">&#39;.DS_Store&#39;</span><span class="p">]</span></div>
+
+
+<span class="c1"># The name of the Pygments (syntax highlighting) style to use.</span>
+<div class="viewcode-block" id="pygments_style">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.pygments_style">[docs]</a>
+<span class="n">pygments_style</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<span class="c1"># -- Options for HTML output -------------------------------------------------</span>
+
+<span class="c1"># The theme to use for HTML and HTML Help pages.  See the documentation for</span>
+<span class="c1"># a list of builtin themes.</span>
+<span class="c1">#</span>
+<div class="viewcode-block" id="html_theme">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.html_theme">[docs]</a>
+<span class="n">html_theme</span> <span class="o">=</span> <span class="s1">&#39;alabaster&#39;</span></div>
+
+
+<span class="c1"># Theme options are theme-specific and customize the look and feel of a theme</span>
+<span class="c1"># further.  For a list of options available for each theme, see the</span>
+<span class="c1"># documentation.</span>
+<span class="c1">#</span>
+<span class="c1"># html_theme_options = {}</span>
+
+<span class="c1"># Add any paths that contain custom static files (such as style sheets) here,</span>
+<span class="c1"># relative to this directory. They are copied after the builtin static files,</span>
+<span class="c1"># so a file named &quot;default.css&quot; will overwrite the builtin &quot;default.css&quot;.</span>
+<div class="viewcode-block" id="html_static_path">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.html_static_path">[docs]</a>
+<span class="n">html_static_path</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_static&#39;</span><span class="p">]</span></div>
+
+
+<span class="c1"># Custom sidebar templates, must be a dictionary that maps document names</span>
+<span class="c1"># to template names.</span>
+<span class="c1">#</span>
+<span class="c1"># The default sidebars (for documents that don&#39;t match any pattern) are</span>
+<span class="c1"># defined by theme itself.  Builtin themes are using these templates by</span>
+<span class="c1"># default: ``[&#39;localtoc.html&#39;, &#39;relations.html&#39;, &#39;sourcelink.html&#39;,</span>
+<span class="c1"># &#39;searchbox.html&#39;]``.</span>
+<span class="c1">#</span>
+<span class="c1"># html_sidebars = {}</span>
+
+
+<span class="c1"># -- Options for HTMLHelp output ---------------------------------------------</span>
+
+<span class="c1"># Output file base name for HTML help builder.</span>
+<div class="viewcode-block" id="htmlhelp_basename">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.htmlhelp_basename">[docs]</a>
+<span class="n">htmlhelp_basename</span> <span class="o">=</span> <span class="s1">&#39;Enigmadoc&#39;</span></div>
+
+
+
+<span class="c1"># -- Options for LaTeX output ------------------------------------------------</span>
+
+<div class="viewcode-block" id="latex_elements">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.latex_elements">[docs]</a>
+<span class="n">latex_elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># The paper size (&#39;letterpaper&#39; or &#39;a4paper&#39;).</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;papersize&#39;: &#39;letterpaper&#39;,</span>
+
+    <span class="c1"># The font size (&#39;10pt&#39;, &#39;11pt&#39; or &#39;12pt&#39;).</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;pointsize&#39;: &#39;10pt&#39;,</span>
+
+    <span class="c1"># Additional stuff for the LaTeX preamble.</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;preamble&#39;: &#39;&#39;,</span>
+
+    <span class="c1"># Latex figure (float) alignment</span>
+    <span class="c1">#</span>
+    <span class="c1"># &#39;figure_align&#39;: &#39;htbp&#39;,</span>
+<span class="p">}</span></div>
+
+
+<span class="c1"># Grouping the document tree into LaTeX files. List of tuples</span>
+<span class="c1"># (source start file, target name, title,</span>
+<span class="c1">#  author, documentclass [howto, manual, or own class]).</span>
+<div class="viewcode-block" id="latex_documents">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.latex_documents">[docs]</a>
+<span class="n">latex_documents</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;Enigma.tex&#39;</span><span class="p">,</span> <span class="s1">&#39;Enigma Documentation&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Gwen Mason, Yi Zhang, Kevin Dai&#39;</span><span class="p">,</span> <span class="s1">&#39;manual&#39;</span><span class="p">),</span>
+<span class="p">]</span></div>
+
+
+
+<span class="c1"># -- Options for manual page output ------------------------------------------</span>
+
+<span class="c1"># One entry per manual page. List of tuples</span>
+<span class="c1"># (source start file, name, description, authors, manual section).</span>
+<div class="viewcode-block" id="man_pages">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.man_pages">[docs]</a>
+<span class="n">man_pages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;enigma&#39;</span><span class="p">,</span> <span class="s1">&#39;Enigma Documentation&#39;</span><span class="p">,</span>
+     <span class="p">[</span><span class="n">author</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">]</span></div>
+
+
+
+<span class="c1"># -- Options for Texinfo output ----------------------------------------------</span>
+
+<span class="c1"># Grouping the document tree into Texinfo files. List of tuples</span>
+<span class="c1"># (source start file, target name, title, author,</span>
+<span class="c1">#  dir menu entry, description, category)</span>
+<div class="viewcode-block" id="texinfo_documents">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.texinfo_documents">[docs]</a>
+<span class="n">texinfo_documents</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">master_doc</span><span class="p">,</span> <span class="s1">&#39;Enigma&#39;</span><span class="p">,</span> <span class="s1">&#39;Enigma Documentation&#39;</span><span class="p">,</span>
+     <span class="n">author</span><span class="p">,</span> <span class="s1">&#39;Enigma&#39;</span><span class="p">,</span> <span class="s1">&#39;One line description of project.&#39;</span><span class="p">,</span>
+     <span class="s1">&#39;Miscellaneous&#39;</span><span class="p">),</span>
+<span class="p">]</span></div>
+
+
+
+<span class="c1"># -- Options for Epub output -------------------------------------------------</span>
+
+<span class="c1"># Bibliographic Dublin Core info.</span>
+<div class="viewcode-block" id="epub_title">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.epub_title">[docs]</a>
+<span class="n">epub_title</span> <span class="o">=</span> <span class="n">project</span></div>
+
+
+<span class="c1"># The unique identifier of the text. This can be a ISBN number</span>
+<span class="c1"># or the project homepage.</span>
+<span class="c1">#</span>
+<span class="c1"># epub_identifier = &#39;&#39;</span>
+
+<span class="c1"># A unique identification for the text.</span>
+<span class="c1">#</span>
+<span class="c1"># epub_uid = &#39;&#39;</span>
+
+<span class="c1"># A list of files that should not be packed into the epub file.</span>
+<div class="viewcode-block" id="epub_exclude_files">
+<a class="viewcode-back" href="../../autoapi/Enigma-docs/conf/index.html#Enigma-docs.conf.epub_exclude_files">[docs]</a>
+<span class="n">epub_exclude_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;search.html&#39;</span><span class="p">]</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

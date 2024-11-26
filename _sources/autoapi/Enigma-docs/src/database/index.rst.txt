@@ -1,0 +1,28 @@
+Enigma-docs.src.database
+========================
+
+.. py:module:: Enigma-docs.src.database
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   Enigma-docs.src.database.create_connection
+   Enigma-docs.src.database.create_table
+   Enigma-docs.src.database.insert_song
+   Enigma-docs.src.database.clear_data
+
+
+Module Contents
+---------------
+
+.. py:function:: create_connection(db_file='songs.db')
+
+.. py:function:: create_table()
+
+.. py:function:: insert_song(data)
+
+.. py:function:: clear_data()
+

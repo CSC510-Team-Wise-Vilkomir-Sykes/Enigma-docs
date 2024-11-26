@@ -1,0 +1,23 @@
+Enigma-docs.tests
+=================
+
+.. py:module:: Enigma-docs.tests
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/Enigma-docs/tests/bot_test/index
+   /autoapi/Enigma-docs/tests/eda_test/index
+   /autoapi/Enigma-docs/tests/get_all_test/index
+   /autoapi/Enigma-docs/tests/preload_songs_test/index
+   /autoapi/Enigma-docs/tests/scraping_test/index
+   /autoapi/Enigma-docs/tests/song_queue_cog_test/index
+   /autoapi/Enigma-docs/tests/test_recommend/index
+   /autoapi/Enigma-docs/tests/utils_test/index
+   /autoapi/Enigma-docs/tests/volume_test/index
+
+

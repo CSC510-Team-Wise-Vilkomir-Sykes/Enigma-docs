@@ -1,0 +1,251 @@
+Enigma-docs.src.bot_state
+=========================
+
+.. py:module:: Enigma-docs.src.bot_state
+
+.. autoapi-nested-parse::
+
+   bot_state.py
+
+   This module defines the `BotState` class, which manages the shared state of the Discord bot's music playback,
+   including the song queue, playback status, and logging.
+
+   **Attributes**:
+   - `song_queue` (list): A queue of songs selected by the user.
+   - `current_song_playing` (Song): The currently playing song.
+   - `_is_paused` (bool): Indicates whether playback is paused.
+   - `_is_looping` (bool): Indicates whether looping mode is enabled.
+   - `logger` (logging.Logger): Logger instance for tracking bot commands and actions.
+   - `volume` (float): Playback volume (default: 50%).
+
+   **Why**:
+   Centralizes the bot's state and playback control, making it easy to manage music-related operations and
+   log actions consistently.
+
+   **How**:
+   - Use class-level methods to interact with shared attributes and perform actions like pause, unpause, stop, and volume control.
+   - Log user interactions with commands and playback.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   Enigma-docs.src.bot_state.BotState
+
+
+Module Contents
+---------------
+
+.. py:class:: BotState
+
+   Manages the shared state and playback control of the Discord bot.
+
+   **Why**: Provides centralized control over the bot's music operations, ensuring consistent state management
+   and logging across commands and events.
+
+   **How**:
+   - Use methods like `pause`, `unpause`, and `stop` to manage playback.
+   - Adjust settings such as volume or looping mode using class-level attributes and methods.
+
+
+   .. py:attribute:: song_queue
+      :value: []
+
+
+
+   .. py:attribute:: current_song_playing
+      :value: None
+
+
+
+   .. py:attribute:: _is_paused
+      :value: False
+
+
+
+   .. py:attribute:: _is_looping
+      :value: False
+
+
+
+   .. py:attribute:: logger
+      :value: None
+
+
+
+   .. py:attribute:: volume
+      :value: 0.5
+
+
+
+   .. py:method:: log_command(ctx, msg)
+      :classmethod:
+
+
+      Logs a command action with the specified message.
+
+      :param ctx: The context of the command, used to access author and command name.
+      :type ctx: Context
+      :param msg: The message to log, providing additional details.
+      :type msg: str
+
+      **Why**: Keeps track of user commands and their outcomes for debugging and auditing purposes.
+
+
+
+   .. py:method:: log_and_send(ctx, msg)
+      :classmethod:
+
+      :async:
+
+
+      Sends a message to the user and logs the command action.
+
+      :param ctx: The context of the command, used for logging and sending messages.
+      :type ctx: Context
+      :param msg: The message to send and log.
+      :type msg: str
+
+      **Why**: Ensures consistent communication with users while maintaining logs for actions taken.
+
+
+
+   .. py:method:: is_in_use()
+      :classmethod:
+
+
+      Checks if a song is currently playing.
+
+      :return: True if a song is playing, False otherwise.
+      :rtype: bool
+
+      **Why**: Determines whether the bot is active in playing music.
+
+
+
+   .. py:method:: is_paused()
+      :classmethod:
+
+
+      Checks if playback is paused.
+
+      :return: True if playback is paused, False otherwise.
+      :rtype: bool
+
+      **Why**: Provides the bot's current playback state for decision-making in commands.
+
+
+
+   .. py:method:: is_in_voice_channel(voice_client)
+      :classmethod:
+
+
+      Checks if the bot is connected to a voice channel.
+
+      :param voice_client: The Discord voice client instance.
+      :type voice_client: VoiceClient
+      :return: True if the bot is connected to a voice channel, False otherwise.
+      :rtype: bool
+
+      **Why**: Ensures that playback operations only occur when the bot is in a valid voice channel.
+
+
+
+   .. py:method:: pause(voice_client)
+      :classmethod:
+
+
+              Pauses playback if a song is currently playing and the bot is connected
+      to a voice channel.
+
+              :param voice_client: The Discord voice client instance.
+              :type voice_client: VoiceClient
+
+              **Why**: Temporarily halts music playback without clearing the queue or playback state.
+
+
+
+
+   .. py:method:: unpause(voice_client)
+      :classmethod:
+
+
+      Resumes playback if paused and the bot is connected to a voice channel.
+
+      :param voice_client: The Discord voice client instance.
+      :type voice_client: VoiceClient
+
+      **Why**: Restarts playback after a pause, maintaining the playback state.
+
+
+
+   .. py:method:: stop(voice_client)
+      :classmethod:
+
+
+      Stops playback and resets playback-related attributes.
+
+      :param voice_client: The Discord voice client instance.
+      :type voice_client: VoiceClient
+
+      **Why**: Ends playback and clears the current state when the bot leaves or stops music.
+
+
+
+   .. py:method:: is_looping()
+      :classmethod:
+
+
+      Checks if the bot is in looping mode.
+
+      :return: True if looping is enabled, False otherwise.
+      :rtype: bool
+
+      **Why**: Identifies if the current song will be replayed after finishing.
+
+
+
+   .. py:method:: set_is_looping(is_looping)
+      :classmethod:
+
+
+      Sets the looping state of the bot.
+
+      :param is_looping: The new looping state to set.
+      :type is_looping: bool
+
+      **Why**: Toggles looping mode for the currently playing song.
+
+
+
+   .. py:method:: set_volume(voice_client, volume)
+      :classmethod:
+
+
+      Sets the playback volume.
+
+      :param voice_client: The Discord voice client instance.
+      :type voice_client: VoiceClient
+      :param volume: The new volume level (0.0 to 1.0).
+      :type volume: float
+
+      **Why**: Provides volume control for playback, ensuring user preferences are met.
+
+
+
+   .. py:method:: get_volume()
+      :classmethod:
+
+
+      Gets the current playback volume.
+
+      :return: The current volume level (0.0 to 1.0).
+      :rtype: float
+
+      **Why**: Allows users to view the current volume level for playback.
+
+
+

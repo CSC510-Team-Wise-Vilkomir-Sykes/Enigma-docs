@@ -1,0 +1,23 @@
+Enigma-docs.src
+===============
+
+.. py:module:: Enigma-docs.src
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/Enigma-docs/src/bot_state/index
+   /autoapi/Enigma-docs/src/database/index
+   /autoapi/Enigma-docs/src/eda/index
+   /autoapi/Enigma-docs/src/get_all/index
+   /autoapi/Enigma-docs/src/recommend_cog/index
+   /autoapi/Enigma-docs/src/scraper/index
+   /autoapi/Enigma-docs/src/song/index
+   /autoapi/Enigma-docs/src/song_queue_cog/index
+   /autoapi/Enigma-docs/src/utils/index
+
+

@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enigma-docs.src.song_queue_cog &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Enigma-docs.src.song_queue_cog</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">song_commands.py</span>
+
+<span class="sd">What:</span>
+<span class="sd">    The `song_commands` module is responsible for handling all Discord bot commands related to song management, including queuing, playback control, and song recommendations. It encapsulates functionalities such as joining voice channels, managing the song queue, controlling playback (play, pause, unpause, skip), and adjusting volume levels. This module leverages Discord&#39;s API to provide an interactive and seamless music experience within a Discord server.</span>
+
+<span class="sd">Why:</span>
+<span class="sd">    Music is a fundamental aspect of many Discord communities, enhancing engagement and creating a lively atmosphere. The `song_commands` module empowers users to interact with the bot to manage their listening experience effortlessly. By providing a comprehensive set of commands for song queuing, playback control, and recommendations, the module ensures that users can customize their music preferences, discover new tracks, and maintain an organized queue. This not only enriches the user experience but also fosters a sense of community through shared musical tastes.</span>
+
+<span class="sd">How:</span>
+<span class="sd">    - **Joining and Leaving Voice Channels**: Users can command the bot to join or leave their current voice channel, ensuring that the music playback is aligned with the user&#39;s location within the server.</span>
+
+<span class="sd">    - **Managing the Song Queue**: Through commands like `/queue`, `/insert`, `/remove`, and `/shuffle`, users can add, insert, remove, and shuffle songs in the queue. These functionalities allow for dynamic and personalized playlist management.</span>
+
+<span class="sd">    - **Playback Control**: Commands such as `/pause`, `/unpause`, `/next`, and `/replay` provide users with control over the music playback, enabling them to manage the listening flow according to their preferences.</span>
+
+<span class="sd">    - **Volume Adjustment**: The `/volume` command allows users to adjust the playback volume, ensuring that the audio levels meet their comfort and situational needs.</span>
+
+<span class="sd">    - **Recommendations and Polling**: Integrating with the `RecommendCog`, commands like `/poll` facilitate song recommendations based on user preferences, enhancing the discovery of new music tailored to the community&#39;s tastes.</span>
+
+<span class="sd">Example Use Cases:</span>
+<span class="sd">    1. **Collaborative Playlist Creation**: Multiple users can add and manage songs in the queue, creating a collaborative playlist that reflects the group&#39;s collective music preferences.</span>
+
+<span class="sd">    2. **Interactive Music Sessions**: During events or gaming sessions, users can control the music playback, ensuring that the audio complements the activity seamlessly.</span>
+
+<span class="sd">    3. **Personalized Music Discovery**: By utilizing the polling and recommendation features, users can discover new songs that align with their existing tastes, enhancing their listening experience.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    SongQueueCog(commands.Cog):</span>
+<span class="sd">        A Discord bot cog that manages song-related commands, including joining/leaving voice channels, managing the song queue, controlling playback, and adjusting volume levels.</span>
+
+<span class="sd">Functions:</span>
+<span class="sd">    - join(ctx):</span>
+<span class="sd">        Joins the voice channel that the user is currently in. If the bot is already in a different voice channel, it moves to the user&#39;s channel.</span>
+
+<span class="sd">    - leave(ctx):</span>
+<span class="sd">        Forces the bot to leave its current voice channel.</span>
+
+<span class="sd">    - pause(ctx):</span>
+<span class="sd">        Pauses the currently playing song.</span>
+
+<span class="sd">    - unpause(ctx):</span>
+<span class="sd">        Unpauses the currently paused song.</span>
+
+<span class="sd">    - queue(ctx, *, query):</span>
+<span class="sd">        Adds a song to the end of the queue based on the provided query.</span>
+
+<span class="sd">    - insert(ctx, *, params):</span>
+<span class="sd">        Inserts a song into a specified position in the queue.</span>
+
+<span class="sd">    - insertfront(ctx, *, query):</span>
+<span class="sd">        Inserts a song at the front of the queue.</span>
+
+<span class="sd">    - next(ctx):</span>
+<span class="sd">        Immediately skips to the next song in the queue.</span>
+
+<span class="sd">    - view(ctx):</span>
+<span class="sd">        Displays the current queue and the song that is currently playing.</span>
+
+<span class="sd">    - shuffle(ctx):</span>
+<span class="sd">        Shuffles all the songs in the queue.</span>
+
+<span class="sd">    - jumpto(ctx, *, idx):</span>
+<span class="sd">        Jumps to a specific track number in the queue.</span>
+
+<span class="sd">    - move(ctx, *, params):</span>
+<span class="sd">        Moves a song from one position to another within the queue.</span>
+
+<span class="sd">    - remove(ctx, *, idx):</span>
+<span class="sd">        Removes a song from the queue based on its track number.</span>
+
+<span class="sd">    - movefront(ctx, *, src_idx):</span>
+<span class="sd">        Moves a song to the front of the queue.</span>
+
+<span class="sd">    - moveback(ctx, *, src_idx):</span>
+<span class="sd">        Moves a song to the back of the queue.</span>
+
+<span class="sd">    - replay(ctx):</span>
+<span class="sd">        Replays the currently playing song once after it ends.</span>
+
+<span class="sd">    - replaynow(ctx):</span>
+<span class="sd">        Immediately restarts the currently playing song.</span>
+
+<span class="sd">    - volume(ctx, volume: int = -1):</span>
+<span class="sd">        Adjusts the playback volume to the specified level (0-100).</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - discord.py: For interacting with the Discord API, handling commands, and managing voice connections.</span>
+<span class="sd">    - asyncio: For managing asynchronous operations, especially related to audio playback and reaction handling.</span>
+<span class="sd">    - yt_dlp: For extracting audio information from YouTube links.</span>
+<span class="sd">    - pandas: For managing song data within DataFrames.</span>
+<span class="sd">    - dotenv: For loading environment variables.</span>
+<span class="sd">    - BotState: A custom module to maintain the current state of the bot, including the song queue, playback status, and volume levels.</span>
+<span class="sd">    - utils: Contains helper functions such as `searchSong` and `random_25` for song searching and random selection.</span>
+<span class="sd">    - Song: The `Song` class from the `song` module, representing individual music tracks.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    To integrate the `SongQueueCog` into your Discord bot, add it to your bot instance as shown below. This will enable all song-related commands, allowing users to manage and control music playback within the Discord server.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        from discord.ext import commands</span>
+<span class="sd">        from song_commands import SongQueueCog</span>
+
+<span class="sd">        bot = commands.Bot(command_prefix=&quot;/&quot;)</span>
+<span class="sd">        bot.add_cog(SongQueueCog(bot))</span>
+<span class="sd">        bot.run(&#39;YOUR_BOT_TOKEN&#39;)</span>
+<span class="sd">        ```</span>
+
+<span class="sd">Notes:</span>
+<span class="sd">    - Ensure that all dependencies are properly installed and configured in your project environment.</span>
+<span class="sd">    - The bot requires appropriate permissions to join and interact within voice channels.</span>
+<span class="sd">    - The `BotState` module should be properly implemented to manage the state across different commands and sessions.</span>
+<span class="sd">    - The `yt_dlp` library is used for extracting audio streams from YouTube; ensure compliance with YouTube&#39;s terms of service when using this functionality.</span>
+<span class="sd">    - Volume levels are normalized between 0.0 and 1.0 internally, corresponding to 0-100% for user interactions.</span>
+<span class="sd">    - Error handling is implemented to manage invalid inputs and unexpected states, enhancing the robustness of the bot.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.forkserver</span> <span class="kn">import</span> <span class="n">set_forkserver_preload</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">discord</span>
+
+
+<span class="kn">from</span> <span class="nn">src.bot_state</span> <span class="kn">import</span> <span class="n">BotState</span>
+<span class="kn">from</span> <span class="nn">discord.ext</span> <span class="kn">import</span> <span class="n">commands</span>
+
+<span class="kn">from</span> <span class="nn">src.song</span> <span class="kn">import</span> <span class="n">Song</span>
+<span class="kn">import</span> <span class="nn">yt_dlp</span> <span class="k">as</span> <span class="nn">youtube_dl</span>
+
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span> <span class="nn">aiohttp</span>
+
+<span class="c1"># Suppress noise from yt-dlp</span>
+<span class="n">youtube_dl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">bug_reports_message</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="ytdl_format_options">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.ytdl_format_options">[docs]</a>
+<span class="n">ytdl_format_options</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;bestaudio/best&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;extractaudio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+	<span class="s2">&quot;noplaylist&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+	<span class="s2">&quot;keepvideo&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+	<span class="s2">&quot;postprocessors&quot;</span><span class="p">:</span> <span class="p">[</span>
+		<span class="p">{</span>
+			<span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;FFmpegExtractAudio&quot;</span><span class="p">,</span>
+			<span class="s2">&quot;preferredcodec&quot;</span><span class="p">:</span> <span class="s2">&quot;opus&quot;</span><span class="p">,</span>
+			<span class="s2">&quot;preferredquality&quot;</span><span class="p">:</span> <span class="s2">&quot;192&quot;</span><span class="p">,</span>
+		<span class="p">}</span>
+	<span class="p">],</span>
+<span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ffmpeg_options">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.ffmpeg_options">[docs]</a>
+<span class="n">ffmpeg_options</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s2">&quot;before_options&quot;</span><span class="p">:</span> <span class="s2">&quot;-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5&quot;</span><span class="p">,</span>
+	<span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="s2">&quot;-vn&quot;</span><span class="p">,</span>
+<span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ytdl">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.ytdl">[docs]</a>
+<span class="n">ytdl</span> <span class="o">=</span> <span class="n">youtube_dl</span><span class="o">.</span><span class="n">YoutubeDL</span><span class="p">(</span><span class="n">ytdl_format_options</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SongQueueCog">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog">[docs]</a>
+<span class="k">class</span> <span class="nc">SongQueueCog</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Cog</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	What:</span>
+<span class="sd">		The `SongQueueCog` is a Discord bot cog that manages all song-related commands, including joining/leaving voice channels, managing the song queue, controlling playback, and adjusting volume levels. It provides a comprehensive suite of commands that allow users to interact with the music queue, ensuring a seamless and interactive listening experience within a Discord server.</span>
+
+<span class="sd">	Why:</span>
+<span class="sd">		Managing music playback in a Discord server enhances user engagement and fosters a vibrant community atmosphere. The `SongQueueCog` empowers users to control their listening experience by providing intuitive commands for managing the song queue, controlling playback, and customizing volume levels. This flexibility ensures that the music experience is tailored to the preferences of the community, promoting active participation and enjoyment.</span>
+
+<span class="sd">	How:</span>
+<span class="sd">		- **Voice Channel Management**: Users can command the bot to join or leave their current voice channel, ensuring that music playback aligns with their location within the server.</span>
+
+<span class="sd">		- **Song Queue Management**: Commands like `/queue`, `/insert`, `/remove`, `/shuffle`, and `/move` allow users to add, insert, remove, shuffle, and rearrange songs in the queue. These functionalities provide dynamic control over the playlist, enabling collaborative and personalized music selection.</span>
+
+<span class="sd">		- **Playback Control**: Commands such as `/pause`, `/unpause`, `/next`, `/replay`, and `/replaynow` offer users the ability to control music playback. These controls ensure that users can manage the flow of music according to their preferences and situational needs.</span>
+
+<span class="sd">		- **Volume Adjustment**: The `/volume` command enables users to adjust the playback volume, ensuring that the audio levels are comfortable and appropriate for the environment.</span>
+
+<span class="sd">		- **Asynchronous Operations**: Leveraging `asyncio`, the cog handles asynchronous tasks such as waiting for user reactions and managing playback queues without blocking the main event loop, ensuring smooth and responsive interactions.</span>
+
+<span class="sd">	Example Use Cases:</span>
+<span class="sd">		1. **Hosting a Music Session**: During a gaming session or virtual event, users can queue songs, control playback, and adjust volume levels to create an engaging and interactive musical backdrop.</span>
+
+<span class="sd">		2. **Collaborative Playlist Building**: Multiple users can add and manage songs in the queue, creating a collaborative playlist that reflects the collective musical tastes of the group.</span>
+
+<span class="sd">		3. **Personalized Listening Experience**: Users can manage their own listening preferences by inserting favorite songs, replaying tracks, and adjusting volume levels to suit their personal comfort.</span>
+
+<span class="sd">	Classes:</span>
+<span class="sd">		SongQueueCog(commands.Cog):</span>
+<span class="sd">			Manages all song-related commands and functionalities, including voice channel management, song queue operations, playback controls, and volume adjustments.</span>
+
+<span class="sd">	Functions:</span>
+<span class="sd">		- __init__(self, bot):</span>
+<span class="sd">			Initializes the `SongQueueCog` with the Discord bot instance.</span>
+
+<span class="sd">		- join(ctx):</span>
+<span class="sd">			Joins the voice channel that the user is currently in. If the bot is already in a different voice channel, it moves to the user&#39;s channel.</span>
+
+<span class="sd">		- leave(ctx):</span>
+<span class="sd">			Forces the bot to leave its current voice channel.</span>
+
+<span class="sd">		- pause(ctx):</span>
+<span class="sd">			Pauses the currently playing song.</span>
+
+<span class="sd">		- unpause(ctx):</span>
+<span class="sd">			Unpauses the currently paused song.</span>
+
+<span class="sd">		- queue(ctx, *, query):</span>
+<span class="sd">			Adds a song to the end of the queue based on the provided query.</span>
+
+<span class="sd">		- insert(ctx, *, params):</span>
+<span class="sd">			Inserts a song into a specified position in the queue.</span>
+
+<span class="sd">		- insertfront(ctx, *, query):</span>
+<span class="sd">			Inserts a song at the front of the queue.</span>
+
+<span class="sd">		- insert_song(ctx, idx, song):</span>
+<span class="sd">			Helper function to insert songs into the queue at a specified index.</span>
+
+<span class="sd">		- delete_track(ctx, idx):</span>
+<span class="sd">			Helper function to delete a song from the queue based on its track number.</span>
+
+<span class="sd">		- ensure_song(ctx, query):</span>
+<span class="sd">			Helper function to validate and convert a query into a `Song` object.</span>
+
+<span class="sd">		- ensure_track_number(ctx, idx):</span>
+<span class="sd">			Helper function to validate and convert a track number from user input.</span>
+
+<span class="sd">		- ensure_insert_number(ctx, idx):</span>
+<span class="sd">			Helper function to validate and convert an insertion number from user input.</span>
+
+<span class="sd">		- play_song(ctx, song):</span>
+<span class="sd">			Helper function to handle the playback of a specified song.</span>
+
+<span class="sd">		- on_play_query_end(ctx, error):</span>
+<span class="sd">			Callback function that runs once a song finishes playing or is terminated, triggering the next song in the queue.</span>
+
+<span class="sd">		- next(ctx):</span>
+<span class="sd">			Immediately skips to the next song in the queue.</span>
+
+<span class="sd">		- play_next_song(ctx):</span>
+<span class="sd">			Helper function to play the next song in the queue.</span>
+
+<span class="sd">		- view(ctx):</span>
+<span class="sd">			Displays the current song queue and the song that is currently playing.</span>
+
+<span class="sd">		- shuffle(ctx):</span>
+<span class="sd">			Shuffles all the songs in the current queue.</span>
+
+<span class="sd">		- jumpto(ctx, *, idx):</span>
+<span class="sd">			Jumps to a specific track number in the queue, discarding all songs before it.</span>
+
+<span class="sd">		- move(ctx, *, params):</span>
+<span class="sd">			Moves a song from one position to another within the queue.</span>
+
+<span class="sd">		- remove(ctx, *, idx):</span>
+<span class="sd">			Removes a song from the queue based on its track number.</span>
+
+<span class="sd">		- movefront(ctx, *, src_idx):</span>
+<span class="sd">			Moves a song to the front of the queue.</span>
+
+<span class="sd">		- moveback(ctx, *, src_idx):</span>
+<span class="sd">			Moves a song to the back of the queue.</span>
+
+<span class="sd">		- replay(ctx):</span>
+<span class="sd">			Replays the currently playing song once after it ends.</span>
+
+<span class="sd">		- replaynow(ctx):</span>
+<span class="sd">			Immediately restarts the currently playing song.</span>
+
+<span class="sd">		- volume(ctx, volume: int = -1):</span>
+<span class="sd">			Adjusts the playback volume to the specified level (0-100).</span>
+
+<span class="sd">		- setup(client):</span>
+<span class="sd">			Registers the `SongQueueCog` with the Discord client.</span>
+
+<span class="sd">	Dependencies:</span>
+<span class="sd">		- discord.py: Facilitates interaction with the Discord API, enabling command handling, voice channel management, and audio playback.</span>
+<span class="sd">		- asyncio: Manages asynchronous operations, ensuring that the bot remains responsive during tasks such as waiting for user reactions and handling playback queues.</span>
+<span class="sd">		- yt_dlp: Extracts audio information from YouTube links, enabling the bot to stream audio tracks.</span>
+<span class="sd">		- pandas: Manages song data within DataFrames for efficient data manipulation and retrieval.</span>
+<span class="sd">		- dotenv: Loads environment variables from a `.env` file, ensuring secure and configurable deployment.</span>
+<span class="sd">		- BotState: A custom module that maintains the current state of the bot, including the song queue, playback status, and volume levels.</span>
+<span class="sd">		- utils: Provides helper functions such as `searchSong` and `random_25` for song searching and random selection.</span>
+<span class="sd">		- Song: The `Song` class from the `song` module, representing individual music tracks.</span>
+
+<span class="sd">	Usage:</span>
+<span class="sd">		To utilize the `SongQueueCog` in your Discord bot, integrate it by adding it to your bot instance as demonstrated below. This will enable all song-related commands, allowing users to manage and control music playback within the Discord server.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			```python</span>
+<span class="sd">			from discord.ext import commands</span>
+<span class="sd">			from song_commands import SongQueueCog</span>
+
+<span class="sd">			bot = commands.Bot(command_prefix=&quot;/&quot;)</span>
+<span class="sd">			bot.add_cog(SongQueueCog(bot))</span>
+<span class="sd">			bot.run(&#39;YOUR_BOT_TOKEN&#39;)</span>
+<span class="sd">			```</span>
+
+<span class="sd">	Notes:</span>
+<span class="sd">		- Ensure that all dependencies are properly installed and configured in your project environment.</span>
+<span class="sd">		- The bot requires appropriate permissions to join and interact within voice channels.</span>
+<span class="sd">		- The `BotState` module should be properly implemented to manage the state across different commands and sessions.</span>
+<span class="sd">		- The `yt_dlp` library is used for extracting audio streams from YouTube; ensure compliance with YouTube&#39;s terms of service when using this functionality.</span>
+<span class="sd">		- Volume levels are normalized between 0.0 and 1.0 internally, corresponding to 0-100% for user interactions.</span>
+<span class="sd">		- Error handling is implemented to manage invalid inputs and unexpected states, enhancing the robustness of the bot.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			Initializes the `SongQueueCog` with the provided Discord bot instance, setting up necessary configurations for managing song commands and playback functionalities.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Proper initialization ensures that the cog is correctly integrated with the Discord bot, allowing it to listen for and respond to relevant commands. This setup is essential for maintaining consistent state management and facilitating seamless interactions between users and the bot.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Stores the bot instance for use within the cog.</span>
+<span class="sd">			- Configures YouTube download options using `yt_dlp`.</span>
+<span class="sd">			- Sets up FFmpeg options for audio playback.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			bot (commands.Bot): The Discord bot instance to which this cog is being added.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			```python</span>
+<span class="sd">			bot = commands.Bot(command_prefix=&quot;/&quot;)</span>
+<span class="sd">			bot.add_cog(SongQueueCog(bot))</span>
+<span class="sd">			```</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SongQueueCog.bot">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.bot">[docs]</a>
+		<span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="n">bot</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;join&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Joins the voice channel of the user&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.join">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.join">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/join` command instructs the bot to join the voice channel that the user is currently in. If the bot is already connected to a different voice channel, it will move to the user&#39;s channel.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Ensuring that the bot is in the same voice channel as the user allows for synchronized music playback, enhancing the collective listening experience within the server.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if the user is in a voice channel.</span>
+<span class="sd">			- Determines if the bot is already connected to a voice channel.</span>
+<span class="sd">			- Joins the user&#39;s voice channel or moves from the current channel to the user&#39;s channel as necessary.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the bot&#39;s actions.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/join` while in the &quot;Music Room&quot; voice channel. The bot joins the &quot;Music Room&quot; channel and confirms the action by sending a message like &quot;Joined voice channel: Music Room&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># Check if the user is in a voice channel</span>
+		<span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">voice</span> <span class="ow">and</span> <span class="n">ctx</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">voice</span><span class="o">.</span><span class="n">channel</span><span class="p">:</span>
+			<span class="n">user_channel</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">voice</span><span class="o">.</span><span class="n">channel</span>
+			<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+
+			<span class="c1"># Check if the bot is already in a voice channel</span>
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_voice_channel</span><span class="p">(</span><span class="n">voice_client</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="n">user_channel</span><span class="p">:</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+						<span class="n">ctx</span><span class="p">,</span>
+						<span class="sa">f</span><span class="s2">&quot;I am already in this voice channel (</span><span class="si">{</span><span class="n">user_channel</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+					<span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="c1"># Move to the new channel</span>
+					<span class="k">await</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">user_channel</span><span class="p">)</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+						<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Switched to voice channel: </span><span class="si">{</span><span class="n">user_channel</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+					<span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="c1"># Join the user&#39;s voice channel</span>
+				<span class="k">await</span> <span class="n">user_channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+					<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Joined voice channel: </span><span class="si">{</span><span class="n">user_channel</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+				<span class="p">)</span>
+
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Please join a voice channel before executing /join&quot;</span>
+			<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;leave&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Leaves the voice channel&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.leave">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.leave">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/leave` command instructs the bot to disconnect from its current voice channel, effectively stopping any ongoing music playback.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to control the bot&#39;s presence in voice channels provides flexibility and ensures that the bot does not occupy channels unnecessarily, especially in dynamic server environments.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if the bot is currently connected to a voice channel.</span>
+<span class="sd">			- Disconnects from the voice channel if connected.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the bot&#39;s actions.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/leave`. If the bot is in the &quot;Music Room&quot; channel, it disconnects and sends a message like &quot;Left voice channel: Music Room&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+
+		<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_voice_channel</span><span class="p">(</span><span class="n">voice_client</span><span class="p">):</span>
+			<span class="n">left_name</span> <span class="o">=</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">name</span>
+			<span class="k">await</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Left voice channel: </span><span class="si">{</span><span class="n">left_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not connected to a voice channel&quot;</span>
+			<span class="p">)</span></div>
+
+
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pause&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Pauses the song&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.pause">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.pause">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/pause` command pauses the currently playing song in the voice channel.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing pause functionality allows users to temporarily halt music playback without disrupting the current queue, enabling them to attend to other tasks or discussions without losing their place in the playlist.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if the bot is connected to a voice channel and if music is currently playing.</span>
+<span class="sd">			- Pauses the playback if it is not already paused.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/pause`. If a song is playing, the bot pauses the music and sends a message like &quot;Pausing music&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+		<span class="k">if</span> <span class="n">voice_client</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_paused</span><span class="p">():</span>
+					<span class="n">BotState</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">voice_client</span><span class="p">)</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Pausing music&quot;</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am already paused&quot;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span>
+											<span class="s2">&quot;I am currently not playing anything&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not connected to a voice channel&quot;</span>
+			<span class="p">)</span></div>
+
+
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;unpause&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Unpauses the song&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.unpause">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.unpause">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/unpause` command resumes playback of a paused song in the voice channel.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to resume paused music provides control over the listening experience, enabling them to continue enjoying the playlist without needing to restart songs or queues.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if the bot is connected to a voice channel and if music is currently paused.</span>
+<span class="sd">			- Unpauses the playback if it is paused.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/unpause`. If the music is paused, the bot resumes playback and sends a message like &quot;Unpausing music&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+		<span class="k">if</span> <span class="n">voice_client</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+				<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_paused</span><span class="p">():</span>
+					<span class="n">BotState</span><span class="o">.</span><span class="n">unpause</span><span class="p">(</span><span class="n">voice_client</span><span class="p">)</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Unpausing music&quot;</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am already unpaused&quot;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span>
+                                            <span class="s2">&quot;I am currently not playing anything&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not connected to a voice channel&quot;</span>
+			<span class="p">)</span></div>
+
+
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Queue a custom song&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.queue">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.queue">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/queue` command adds a song to the end of the current song queue based on the provided query.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to add songs to the current song queue based on the provided query.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to add songs to thequeue ensures that the playlist reflects the community&#39;s preferences and accommodates dynamic song selection.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates and converts the user&#39;s query into a `Song` object.</span>
+<span class="sd">			- Inserts the song at the end of the queue.</span>
+<span class="sd">			- Sends confirmation messages to inform users that the song has been queued.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/queue Never Gonna Give You Up`. The bot adds &quot;Never Gonna Give You Up&quot; to the end of the queue and sends a message like &quot;Queued song: Never Gonna Give You Up by Rick Astley&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		query (str): The search query or name of the song to be added to the queue.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">song</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="c1"># remember that commands expect queue idx to start at 1</span>
+			<span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">song</span><span class="p">):</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Queued song: </span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+				<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;insert&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Insert a custom song&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.insert">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.insert">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/insert` command inserts a song into a specified position within the current song queue based on the provided parameters.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing the ability to insert songs at arbitrary positions allows users to prioritize certain tracks or rearrange the playlist to better suit their preferences.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Parses the input parameters to extract the target index and song query.</span>
+<span class="sd">			- Validates and converts the song query into a `Song` object.</span>
+<span class="sd">			- Inserts the song at the specified position in the queue.</span>
+<span class="sd">			- Sends confirmation messages to inform users that the song has been inserted.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/insert 2 Shape of You`. The bot inserts &quot;Shape of You&quot; at position 2 in the queue and sends a message like &quot;Inserted song Shape of You by Ed Sheeran as track number 2&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		params (str): A string containing the target index and song query, separated by a space (e.g., &quot;2 Shape of You&quot;).</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">idx</span><span class="p">,</span> <span class="n">query</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="n">song</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">song</span><span class="p">):</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+					<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Inserted song </span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="s2"> as track number </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
+				<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;insertfront&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Insert a custom song at the front&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.insertfront">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.insertfront">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">insertfront</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/insertfront` command inserts a song at the very front of the current song queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to prioritize certain songs by inserting them at the front ensures that important or favorite tracks are played immediately.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates and converts the user&#39;s query into a `Song` object.</span>
+<span class="sd">			- Inserts the song at the front of the queue.</span>
+<span class="sd">			- Sends confirmation messages to inform users that the song has been inserted at the front.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/insertfront Bohemian Rhapsody`. The bot inserts &quot;Bohemian Rhapsody&quot; at the front of the queue and sends a message like &quot;Inserted song Bohemian Rhapsody by Queen as track number 1&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation, containing information such as the channel, author, and guild.</span>
+<span class="sd">		query (str): The search query or name of the song to be inserted at the front of the queue.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># remember that commands expect queue idx to start at 1</span>
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;1 </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.insert_song">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.insert_song">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">song</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `insert_song` helper function inserts a `Song` object into the queue at the specified index.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Encapsulating the insertion logic within a helper function promotes code reusability and ensures consistent handling of song insertions across different commands.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the insertion index.</span>
+<span class="sd">			- Inserts the song into the queue at the validated index.</span>
+<span class="sd">			- Returns a boolean indicating the success of the operation.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Inserting a song at position 3: `insert_song(ctx, 3, Song(&quot;Imagine&quot;, &quot;John Lennon&quot;, &quot;Rock&quot;))`</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">			idx (int or str): The target index at which to insert the song.</span>
+<span class="sd">			song (Song): The `Song` object to be inserted into the queue.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			bool: `True` if the insertion was successful, `False` otherwise.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">idx</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SongQueueCog</span><span class="o">.</span><span class="n">ensure_insert_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">song</span><span class="p">)</span>
+			<span class="k">return</span> <span class="kc">True</span>
+		<span class="k">return</span> <span class="kc">False</span></div>
+
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.delete_track">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.delete_track">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_track</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `delete_track` helper function removes a song from the queue based on its track number.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing a method to delete tracks ensures that users can manage the queue effectively, removing unwanted or unwanted songs to maintain a preferred playlist order.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the track number.</span>
+<span class="sd">			- Removes the song from the queue at the validated index.</span>
+<span class="sd">			- Returns the removed `Song` object if successful.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Removing the song at track number 4: `delete_track(ctx, 4)`</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		idx (int or str): The track number of the song to be removed.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			Song or None: The removed `Song` object if the deletion was successful, `None` otherwise.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">idx</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SongQueueCog</span><span class="o">.</span><span class="n">ensure_track_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">removed_song</span> <span class="o">=</span> <span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">removed_song</span>
+		<span class="k">return</span> <span class="kc">None</span></div>
+
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.ensure_song">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.ensure_song">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">ensure_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `ensure_song` helper function validates and converts a user&#39;s query into a `Song` object.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Ensuring that the query is valid and properly formatted is essential for maintaining the integrity of the song queue and preventing errors during playback.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Strips any leading or trailing whitespace from the query.</span>
+<span class="sd">			- Checks if the query is non-empty.</span>
+<span class="sd">			- Creates a `Song` object if the query is valid.</span>
+<span class="sd">			- Sends an error message if the query is invalid.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Valid query: &quot;Shape of You&quot; → `Song(&quot;Shape of You&quot;)`</span>
+<span class="sd">			Invalid query: &quot;&quot; → Sends &quot;Please enter a song&quot;</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		query (str): The user&#39;s search query or song name.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			Song or None: The created `Song` object if the query is valid, `None` otherwise.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">Song</span><span class="p">(</span><span class="n">track_name</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Please enter a song&quot;</span><span class="p">)</span>
+			<span class="k">return</span> <span class="kc">None</span></div>
+
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.ensure_track_number">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.ensure_track_number">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">ensure_track_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `ensure_track_number` helper function validates and converts a track number from user input into a zero-based index.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Validating track numbers ensures that operations like removing or moving songs in the queue are performed on valid entries, preventing out-of-range errors and maintaining queue integrity.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Attempts to convert the input to an integer.</span>
+<span class="sd">			- Adjusts for zero-based indexing.</span>
+<span class="sd">			- Checks if the index is within the valid range of the queue.</span>
+<span class="sd">			- Sends an error message if the index is invalid.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Valid input: &quot;3&quot; → Returns `2` (zero-based index)</span>
+<span class="sd">			Invalid input: &quot;0&quot; or &quot;100&quot; (if queue has fewer songs) → Sends &#39;&quot;0&quot; is not a valid track number&#39;</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		idx (int or str): The track number input by the user.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			int or None: The zero-based index if valid, `None` otherwise.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">safe_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+			<span class="k">if</span> <span class="n">safe_idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">safe_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">):</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span>
+			<span class="k">return</span> <span class="n">safe_idx</span>
+		<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&quot; is not a valid track number&#39;</span><span class="p">)</span>
+			<span class="k">return</span> <span class="kc">None</span></div>
+
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.ensure_insert_number">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.ensure_insert_number">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">ensure_insert_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `ensure_insert_number` helper function validates and converts an insertion number from user input into a zero-based index suitable for inserting into the queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Validating insertion numbers ensures that songs are inserted at valid positions within the queue, preventing out-of-range errors and maintaining queue integrity.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Attempts to convert the input to an integer.</span>
+<span class="sd">			- Adjusts for zero-based indexing.</span>
+<span class="sd">			- Checks if the index is within the valid range for insertion.</span>
+<span class="sd">			- Sends an error message if the index is invalid.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Valid input: &quot;1&quot; → Returns `0` (zero-based index)</span>
+<span class="sd">			Valid input: &quot;5&quot; (if queue has 4 songs) → Returns `4`</span>
+<span class="sd">			Invalid input: &quot;-1&quot; or &quot;abc&quot; → Sends &#39;&quot;-1&quot; is not a valid track number&#39;</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		idx (int or str): The insertion number input by the user.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			int or None: The zero-based index if valid, `None` otherwise.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">safe_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+			<span class="k">if</span> <span class="n">safe_idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">safe_idx</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">):</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span>
+			<span class="k">return</span> <span class="n">safe_idx</span>
+		<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&quot; is not a valid track number&#39;</span><span class="p">)</span>
+			<span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SongQueueCog.play_song">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.play_song">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">play_song</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">song</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `play_song` helper function handles the playback of a specified song within the voice channel.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Encapsulating the playback logic within a helper function ensures consistent handling of audio streams, error management, and state updates, providing a smooth listening experience for users.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Searches for the song on YouTube using `yt_dlp`.</span>
+<span class="sd">			- Extracts the audio URL and prepares the audio source with FFmpeg options.</span>
+<span class="sd">			- Manages the playback state, including stopping any currently playing song if necessary.</span>
+<span class="sd">			- Initiates audio playback in the voice channel.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the currently playing song.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			Playing &quot;Shape of You&quot;: `play_song(ctx, Song(&quot;Shape of You&quot;))` → Plays the song and sends &quot;Now playing: **Shape of You by Ed Sheeran**&quot;</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		song (Song): The `Song` object representing the song to be played.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+		<span class="k">if</span> <span class="n">voice_client</span><span class="p">:</span>
+			<span class="n">url</span> <span class="o">=</span> <span class="n">song</span><span class="o">.</span><span class="n">url</span>
+
+			<span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error playing song </span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="s2">: No URL found&quot;</span><span class="p">)</span>
+				<span class="k">return</span>
+
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+				<span class="n">BotState</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">voice_client</span><span class="p">)</span>
+				<span class="n">BotState</span><span class="o">.</span><span class="n">log_command</span><span class="p">(</span>
+					<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Terminating current song </span><span class="si">{</span><span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span><span class="si">}</span><span class="s2">&quot;</span>
+				<span class="p">)</span>
+
+			<span class="k">while</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+				<span class="c1"># we must wait for the previous song to clean up</span>
+				<span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+			<span class="c1"># Create FFmpeg audio source with applied filters</span>
+			<span class="n">audio_source</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">FFmpegPCMAudio</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">ffmpeg_options</span><span class="p">)</span>
+			<span class="c1"># Apply volume transformation</span>
+			<span class="n">audio_source</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">PCMVolumeTransformer</span><span class="p">(</span><span class="n">audio_source</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">BotState</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+
+			<span class="c1"># Play the audio stream</span>
+			<span class="n">ctx</span><span class="o">.</span><span class="n">voice_client</span><span class="o">.</span><span class="n">play</span><span class="p">(</span>
+				<span class="n">audio_source</span><span class="p">,</span>
+				<span class="n">after</span><span class="o">=</span><span class="k">lambda</span> <span class="n">error</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">on_play_query_end</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">error</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">loop</span>
+				<span class="p">),</span>
+			<span class="p">)</span>
+			<span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span> <span class="o">=</span> <span class="n">song</span>
+
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Now playing: **</span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">)</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>  <span class="c1"># Preload after starting to play</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not connected to a voice channel&quot;</span>
+			<span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SongQueueCog.on_play_query_end">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.on_play_query_end">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">on_play_query_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `on_play_query_end` callback function is invoked once a song finishes playing or is terminated. It handles the transition to the next song in the queue or repeats the current song if looping is enabled.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Managing the end of song playback ensures that the music queue progresses smoothly, automatically playing the next song or repeating as per the user&#39;s preferences without requiring manual intervention.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Logs the completion of the current song.</span>
+<span class="sd">			- Stops the current playback state.</span>
+<span class="sd">			- Checks if looping is enabled; if so, replays the current song.</span>
+<span class="sd">			- Otherwise, plays the next song in the queue if available.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			After &quot;Shape of You&quot; finishes playing, `on_play_query_end` is called to either replay the song or proceed to the next track in the queue.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">			error (Exception): Any error that occurred during playback.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">voice_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span>
+
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_command</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Finished playing song&quot;</span><span class="p">)</span>
+		<span class="n">current_song</span> <span class="o">=</span> <span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span>
+		<span class="n">BotState</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">voice_client</span><span class="p">)</span>
+
+		<span class="c1"># No need to clean up since songs are kept in memory</span>
+
+		<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_voice_channel</span><span class="p">(</span><span class="n">voice_client</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_looping</span><span class="p">():</span>
+				<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">play_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+					<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">play_next_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">preload_songs</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>  <span class="c1"># Preload after song ends</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+		<span class="n">name</span><span class="o">=</span><span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Immediately jump to the next song in the queue&quot;</span>
+	<span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.next">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.next">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/next` command immediately skips the currently playing song and moves to the next song in the queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing a quick way to skip songs enhances user control over the listening experience, allowing them to bypass unwanted tracks without disrupting the entire queue.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if a song is currently playing.</span>
+<span class="sd">			- Stops the current playback.</span>
+<span class="sd">			- Initiates playback of the next song in the queue.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/next` while &quot;Shape of You&quot; is playing. The bot stops &quot;Shape of You&quot; and starts playing the next song in the queue, sending a message like &quot;Now playing: **Blinding Lights by The Weeknd**&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="n">BotState</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">play_next_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SongQueueCog.play_next_song">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.play_next_song">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">play_next_song</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `play_next_song` helper function plays the next song in the queue if one exists.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Automating the transition to the next song ensures a continuous and uninterrupted music playback experience for users.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if there are songs in the queue.</span>
+<span class="sd">			- Removes the next song from the queue.</span>
+<span class="sd">			- Initiates playback of the next song using `play_song`.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			If the queue contains &quot;Bohemian Rhapsody&quot; and &quot;Imagine&quot;, calling `play_next_song` will remove &quot;Bohemian Rhapsody&quot; from the queue and start playing it, sending &quot;Now playing: **Bohemian Rhapsody by Queen**&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Please add a song to the queue first&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">next_song</span> <span class="o">=</span> <span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">play_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">next_song</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show current queue and currently playing song&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.view">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.view">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/view` command displays the current song queue and indicates which song is currently playing.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing visibility into the song queue and playback status allows users to stay informed about the current playlist and upcoming tracks, enhancing transparency and coordination within the server.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if a song is currently playing.</span>
+<span class="sd">			- Constructs a message detailing the currently playing song and the list of queued songs.</span>
+<span class="sd">			- Sends the constructed message to the channel.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/view`. The bot responds with:</span>
+<span class="sd">			```</span>
+<span class="sd">			Now playing: Shape of You by Ed Sheeran</span>
+
+<span class="sd">		Current Queue:</span>
+<span class="sd">			1. Bohemian Rhapsody by Queen</span>
+<span class="sd">			2. Imagine by John Lennon</span>
+<span class="sd">			```</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Now playing: </span><span class="si">{</span><span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span><span class="si">}</span><span class="s2">&quot;</span>
+
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_paused</span><span class="p">():</span>
+				<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; **[PAUSED]**&quot;</span>
+
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_looping</span><span class="p">():</span>
+				<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; **[LOOPING]**&quot;</span>
+
+			<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Currently not playing anything</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;No songs in queue. Try /queue &lt;query&gt; to get started&quot;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Current Queue:</span><span class="se">\n</span><span class="s2">&quot;</span>
+			<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">song</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+				<span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+		<span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_command</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Acknowledged&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;shuffle&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Shuffle songs in queue&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.shuffle">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.shuffle">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/shuffle` command randomizes the order of songs in the current queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Shuffling the queue provides variety and ensures that the listening experience remains fresh and unpredictable, catering to diverse user preferences.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if there are songs in the queue.</span>
+<span class="sd">			- Randomizes the order of the songs using Python&#39;s `random.shuffle`.</span>
+<span class="sd">			- Sends a confirmation message indicating that the queue has been shuffled.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/shuffle`. If the queue has multiple songs, the bot shuffles their order and sends a message like &quot;Shuffled! Do /view to see the current queue&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No songs in queue. Try /queue &lt;query&gt; to get started&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span>
+			<span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shuffled! Do /view to see the current queue&quot;</span><span class="p">)</span>
+
+		<span class="n">BotState</span><span class="o">.</span><span class="n">log_command</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Acknowledged&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;jumpto&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Jump to a specific track number&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.jumpto">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.jumpto">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">jumpto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/jumpto` command allows users to jump directly to a specific track number in the queue, discarding all songs that precede it.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing the ability to jump to a specific track offers users greater control over the playlist, enabling them to prioritize or revisit particular songs without manually skipping through the queue.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the provided track number.</span>
+<span class="sd">			- Adjusts the queue by removing all songs before the specified track.</span>
+<span class="sd">			- Initiates playback of the specified track.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/jumpto 3`. The bot removes the first two songs from the queue and starts playing the third song, sending a message like &quot;Jumped to track number 3 in the queue&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		idx (int or str): The track number to jump to.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">safe_idx</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_track_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">safe_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="c1"># We discard all the songs before idx</span>
+			<span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span> <span class="o">=</span> <span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[</span><span class="n">safe_idx</span><span class="p">:]</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Jumped to track number </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> in the queue&quot;</span>
+			<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+		<span class="n">name</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span>
+		<span class="n">help</span><span class="o">=</span><span class="s2">&quot;Move a song from one position to another in &quot;</span>
+             <span class="s2">&quot;the queue&quot;</span><span class="p">,</span>
+	<span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.move">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.move">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/move` command moves a song from one track number to another within the current queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to rearrange songs in the queue enhances the ability to prioritize certain tracks, ensuring that favorite or important songs are played in the desired order.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Parses the input parameters to extract the source and destination indices.</span>
+<span class="sd">			- Validates both indices.</span>
+<span class="sd">			- Removes the song from the source position and inserts it at the destination position.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/move 2 5`. The bot moves the song at track number 2 to track number 5, sending a message like &quot;Moved Imagine by John Lennon from track 2 to track 5&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		params (str): A string containing the source and destination track numbers, separated by a space (e.g., &quot;2 5&quot;).</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">src_idx</span><span class="p">,</span> <span class="n">dest_idx</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+		<span class="c1"># dest_idx is ensured as a track number (0 &lt; idx &lt; size) and not as an</span>
+        <span class="c1"># insertion number (0 &lt; idx &lt;= size)</span>
+		<span class="c1"># this is because when we can only move it to a maximum index of size-1</span>
+		<span class="n">safe_dest_idx</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_track_number</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dest_idx</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">safe_dest_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">moved_song</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_track</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">src_idx</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">moved_song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+				<span class="c1"># we need to pass in dest_idx again, not safe_dest_idx,</span>
+				<span class="c1"># since safe_dest_idx has been converted to 0-starting idx</span>
+				<span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">dest_idx</span><span class="p">,</span> <span class="n">moved_song</span><span class="p">):</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+						<span class="n">ctx</span><span class="p">,</span>
+						<span class="sa">f</span><span class="s2">&quot;Moved </span><span class="si">{</span><span class="n">moved_song</span><span class="si">}</span><span class="s2"> from track </span><span class="si">{</span><span class="n">src_idx</span><span class="si">}</span><span class="s2"> to track &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dest_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+					<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+		<span class="n">name</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Remove a song from the queue by track number&quot;</span>
+	<span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.remove">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.remove">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/remove` command deletes a song from the queue based on its track number.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing the ability to remove unwanted or duplicate songs ensures that the queue remains organized and reflective of the users&#39; current preferences.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the provided track number.</span>
+<span class="sd">			- Removes the song from the queue at the specified index.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the removal.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/remove 3`. The bot removes the third song from the queue and sends a message like &quot;Removed Imagine by John Lennon (track number 3)&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		idx (int or str): The track number of the song to be removed.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">removed_song</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_track</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">removed_song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">removed_song</span><span class="si">}</span><span class="s2"> (track number </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">)&quot;</span>
+			<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;movefront&quot;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Move a song to the front of the queue&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.movefront">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.movefront">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">movefront</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">src_idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/movefront` command moves a specified song to the front of the queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to prioritize certain songs by moving them to the front ensures that important tracks are played immediately, enhancing the listening experience.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the provided source track number.</span>
+<span class="sd">			- Moves the song to the front of the queue using the `/move` command internally.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/movefront 4`. The bot moves the fourth song to the front of the queue and sends a message like &quot;Moved Imagine by John Lennon from track 4 to track 1&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		src_idx (int or str): The track number of the song to be moved to the front.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># remember that commands expect queue idx to start at 1</span>
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">src_idx</span><span class="si">}</span><span class="s2"> 1&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;moveback&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Move a song to the back of the queue&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.moveback">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.moveback">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">moveback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">src_idx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/moveback` command moves a specified song to the back of the queue.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to deprioritize certain songs by moving them to the back ensures that less preferred tracks are played later, maintaining an enjoyable and relevant playlist.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the provided source track number.</span>
+<span class="sd">			- Moves the song to the back of the queue using the `/move` command internally.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/moveback 2`. The bot moves the second song to the back of the queue and sends a message like &quot;Moved Bohemian Rhapsody by Queen from track 2 to track 5&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">		src_idx (int or str): The track number of the song to be moved to the back.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># remember that commands expect queue idx to start at 1</span>
+		<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">src_idx</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+		<span class="n">name</span><span class="o">=</span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Replay the currently playing song once after it ends&quot;</span>
+	<span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.replay">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.replay">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">replay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/replay` command schedules the currently playing song to be replayed once after it finishes.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Replaying a song allows users to listen to their favorite tracks again without manually re-queueing them, enhancing the flexibility and enjoyment of the listening experience.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if a song is currently playing.</span>
+<span class="sd">			- If looping is not already enabled, inserts the currently playing song at the front of the queue.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/replay`. If &quot;Imagine&quot; is currently playing, the bot schedules it to be replayed by adding it to the front of the queue and sends a message like &quot;Got it, I will add this song to the front of the queue again&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not playing any songs&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_looping</span><span class="p">():</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am already set to loop&quot;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span><span class="p">)</span>
+				<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+					<span class="n">ctx</span><span class="p">,</span>
+                    <span class="s2">&quot;Got it, I will add this song to the front of the queue again&quot;</span>
+				<span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+		<span class="n">name</span><span class="o">=</span><span class="s2">&quot;replaynow&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Immediately restart the currently playing song&quot;</span>
+	<span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.replaynow">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.replaynow">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">replaynow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/replaynow` command immediately restarts the currently playing song.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to instantly replay a song ensures that they can enjoy their favorite tracks again without waiting for the queue to cycle through.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Checks if a song is currently playing.</span>
+<span class="sd">			- Inserts the currently playing song at the front of the queue.</span>
+<span class="sd">			- Invokes the `/next` command to start playing the song immediately.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the action taken.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/replaynow` while &quot;Shape of You&quot; is playing. The bot restarts &quot;Shape of You&quot; and sends a message like &quot;Got it, I will immediately restart this song&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">BotState</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;I am currently not playing any songs&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span>
+				<span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Got it, I will immediately restart this song&quot;</span>
+			<span class="p">)</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_song</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BotState</span><span class="o">.</span><span class="n">current_song_playing</span><span class="p">)</span>
+			<span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Adjust the playback volume (0-100)&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SongQueueCog.volume">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.volume">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/volume` command prompts the user to provide a volume level between 0 and 100 to adjust the playback volume.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Allowing users to adjust the volume ensures that the audio levels are comfortable and suitable for their listening environment, enhancing the overall experience.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Sends a message requesting the user to provide a valid volume level.</span>
+<span class="sd">			- Waits for the user&#39;s response and adjusts the volume accordingly.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/volume` without specifying a level. The bot responds with &quot;Please provide a volume between 0 and 100.&quot;</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Please provide a volume between 0 and 100.&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@commands</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Adjust the playback volume (0-100)&quot;</span><span class="p">)</span>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `/volume` command adjusts the playback volume to the specified level between 0 and 100.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Providing precise volume control allows users to tailor the audio output to their preferences and environmental needs, ensuring a pleasant listening experience.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Validates the provided volume level to ensure it is within the acceptable range (0-100).</span>
+<span class="sd">			- Normalizes the volume level for internal use.</span>
+<span class="sd">			- Updates the bot&#39;s volume setting.</span>
+<span class="sd">			- Sends confirmation messages to inform users of the volume change.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			A user types `/volume 75`. The bot sets the playback volume to 75% and sends a message like &quot;Volume changed from 50% to 75%&quot;.</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			ctx (commands.Context): The context of the command invocation.</span>
+<span class="sd">			volume (int, optional): The desired volume level (0-100). Defaults to -1 if not provided.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+			<span class="n">normalized_volume</span> <span class="o">=</span> <span class="n">volume</span> <span class="o">/</span> <span class="mi">100</span>
+			<span class="n">oldvolume</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">BotState</span><span class="o">.</span><span class="n">get_volume</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+			<span class="n">BotState</span><span class="o">.</span><span class="n">set_volume</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">voice_client</span><span class="p">,</span> <span class="n">normalized_volume</span><span class="p">)</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Volume changed from </span><span class="si">{</span><span class="n">oldvolume</span><span class="si">}</span><span class="s2">% to </span><span class="si">{</span><span class="n">volume</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s2">&quot;Please provide a volume between 0 and 100.&quot;</span><span class="p">)</span>
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SongQueueCog.setup">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.setup">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		What:</span>
+<span class="sd">			The `setup` static method registers the `SongQueueCog` with the provided Discord client.</span>
+
+<span class="sd">		Why:</span>
+<span class="sd">			Registering the cog ensures that all defined commands and functionalities are recognized and handled by the bot, making them available for user interactions.</span>
+
+<span class="sd">		How:</span>
+<span class="sd">			- Adds an instance of `SongQueueCog` to the Discord client.</span>
+
+<span class="sd">		Example:</span>
+<span class="sd">			```python</span>
+<span class="sd">			bot = commands.Bot(command_prefix=&quot;/&quot;)</span>
+<span class="sd">			await SongQueueCog.setup(bot)</span>
+<span class="sd">			```</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			client (discord.Client): The Discord client instance to which the cog will be added.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">			None</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">add_cog</span><span class="p">(</span><span class="n">SongQueueCog</span><span class="p">(</span><span class="n">client</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SongQueueCog.preload_songs">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/song_queue_cog/index.html#Enigma-docs.src.song_queue_cog.SongQueueCog.preload_songs">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">preload_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Preloads the audio data for the next 5 songs in the queue into memory.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">preload_count</span> <span class="o">=</span> <span class="mi">5</span>
+		<span class="n">songs_to_preload</span> <span class="o">=</span> <span class="n">BotState</span><span class="o">.</span><span class="n">song_queue</span><span class="p">[:</span><span class="n">preload_count</span><span class="p">]</span>
+		<span class="k">for</span> <span class="n">song</span> <span class="ow">in</span> <span class="n">songs_to_preload</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">song</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="c1"># Extract information without downloading</span>
+					<span class="n">info</span> <span class="o">=</span> <span class="n">ytdl</span><span class="o">.</span><span class="n">extract_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ytsearch:</span><span class="si">{</span><span class="n">song</span><span class="o">.</span><span class="n">track_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;entries&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+					<span class="n">url</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+
+					<span class="n">song</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+
+					<span class="c1"># # Asynchronously download the audio data</span>
+					<span class="c1"># async with aiohttp.ClientSession() as session:</span>
+					<span class="c1"># 	async with session.get(url) as resp:</span>
+					<span class="c1"># 		await BotState.log_and_send(ctx, f&quot;starting session {url}&quot;)</span>
+					<span class="c1"># 		if resp.status != 200:</span>
+					<span class="c1"># 			raise Exception(f&quot;Failed to download song: {song.track_name}&quot;)</span>
+					<span class="c1"># 		song.audio_data = BytesIO(await resp.read())</span>
+					<span class="c1"># 		print(&quot;audio data&quot;, song.audio_data)</span>
+					<span class="c1"># 		await BotState.log_and_send(ctx, f&quot;song.audio_data updated&quot;)</span>
+				<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="k">await</span> <span class="n">BotState</span><span class="o">.</span><span class="n">log_and_send</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error preloading song </span><span class="si">{</span><span class="n">song</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

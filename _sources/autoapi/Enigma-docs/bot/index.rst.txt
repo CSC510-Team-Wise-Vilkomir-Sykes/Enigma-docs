@@ -1,0 +1,137 @@
+Enigma-docs.bot
+===============
+
+.. py:module:: Enigma-docs.bot
+
+.. autoapi-nested-parse::
+
+   bot.py
+
+   This module initializes and runs a Discord bot with multiple cogs for handling song recommendations, queueing,
+   and voice state updates. It configures the bot's command prefix, loads essential cogs, and defines event handlers
+   for bot readiness, incoming messages, and voice state changes.
+
+   **Environment Variables**:
+   - `DISCORD_TOKEN`: The bot token used to authenticate with Discord, loaded from a `.env` file.
+
+   **Modules**:
+   1. `BotState`: Manages the state of the bot, including logging and audio playback control.
+   2. `RecommendCog`: A cog that provides song recommendation and polling commands.
+   3. `SongQueueCog`: A cog that handles song queueing operations.
+   4. `searchSong`: Utility function for song search.
+
+   **Why**: Provides a central entry point to initialize and manage the bot's functionality, enabling music-related
+   features and responsive user interactions on Discord.
+
+   **How**:
+   - Define event handlers like `on_ready`, `on_message`, and `on_voice_state_update`.
+   - Load cogs for modular functionality.
+   - Authenticate using a Discord bot token.
+
+   Modules:
+       - BotState: Manages the state of the bot, including logging and audio playback
+       control.
+       - RecommendCog: A cog that provides song recommendation and polling commands.
+       - SongQueueCog: A cog that handles song queueing operations.
+       - searchSong: Utility function for song search.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   Enigma-docs.bot.TOKEN
+   Enigma-docs.bot.intents
+   Enigma-docs.bot.client
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   Enigma-docs.bot.schedule_task
+   Enigma-docs.bot.on_ready
+   Enigma-docs.bot.on_message
+   Enigma-docs.bot.on_voice_state_update
+
+
+Module Contents
+---------------
+
+.. py:data:: TOKEN
+
+.. py:data:: intents
+
+.. py:data:: client
+
+.. py:function:: schedule_task()
+   :async:
+
+
+.. py:function:: on_ready()
+   :async:
+
+
+   Event triggered when the bot is ready and connected to Discord.
+
+   **What**:
+   - Initializes the bot by loading essential cogs.
+   - Sets up logging for state tracking and error reporting.
+
+           **Why**: Ensures the bot is fully prepared for interaction, with all necessary functionality initialized.
+
+   **How**:
+   - Load `SongQueueCog` and `RecommendCog` to handle music queueing and recommendations.
+   - Log the bot's readiness for debugging or tracking
+           purposes.
+
+
+.. py:function:: on_message(message)
+   :async:
+
+
+   Processes incoming messages on Discord.
+
+   **What**:
+   - Ignores messages sent by the bot itself.
+   - Processes commands in channels whose names start with "general".
+
+   **Why**:
+   - Focuses bot functionality on specific channels, preventing interference from non-command messages.
+
+   **How**:
+   - Check if the message originates from the bot.
+   - Ensure the channel name starts with "general" before processing commands.
+
+   :param message: The incoming message from Discord.
+   :type message: discord.Message
+
+
+.. py:function:: on_voice_state_update(member, before, after)
+   :async:
+
+
+   Handles changes in voice states to manage audio playback for the bot.
+
+   **What**:
+   - Stops playback if the bot disconnects from a voice channel.
+   - Pauses playback if the bot switches voice channels.
+
+   **Why**:
+   - Ensures smooth audio transitions and avoids playback issues when the bot's voice state changes.
+
+   **How**:
+   - Detect whether the bot is leaving or switching channels.
+   - Use `BotState` to stop or pause playback accordingly.
+
+   :param member: The member whose voice state changed.
+   :type member: discord.Member
+   :param before: The member's previous voice state.
+   :type before: discord.VoiceState
+   :param after: The member's current voice state.
+   :type after: discord.VoiceState
+
+

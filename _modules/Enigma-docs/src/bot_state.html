@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enigma-docs.src.bot_state &#8212; Enigma  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Enigma-docs.src.bot_state</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">bot_state.py</span>
+
+<span class="sd">This module defines the `BotState` class, which manages the shared state of the Discord bot&#39;s music playback,</span>
+<span class="sd">including the song queue, playback status, and logging.</span>
+
+<span class="sd">**Attributes**:</span>
+<span class="sd">- `song_queue` (list): A queue of songs selected by the user.</span>
+<span class="sd">- `current_song_playing` (Song): The currently playing song.</span>
+<span class="sd">- `_is_paused` (bool): Indicates whether playback is paused.</span>
+<span class="sd">- `_is_looping` (bool): Indicates whether looping mode is enabled.</span>
+<span class="sd">- `logger` (logging.Logger): Logger instance for tracking bot commands and actions.</span>
+<span class="sd">- `volume` (float): Playback volume (default: 50%).</span>
+
+<span class="sd">**Why**:</span>
+<span class="sd">Centralizes the bot&#39;s state and playback control, making it easy to manage music-related operations and</span>
+<span class="sd">log actions consistently.</span>
+
+<span class="sd">**How**:</span>
+<span class="sd">- Use class-level methods to interact with shared attributes and perform actions like pause, unpause, stop, and volume control.</span>
+<span class="sd">- Log user interactions with commands and playback.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BotState">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState">[docs]</a>
+<span class="k">class</span> <span class="nc">BotState</span><span class="p">:</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Manages the shared state and playback control of the Discord bot.</span>
+
+<span class="sd">	**Why**: Provides centralized control over the bot&#39;s music operations, ensuring consistent state management</span>
+<span class="sd">	and logging across commands and events.</span>
+
+<span class="sd">	**How**:</span>
+<span class="sd">	- Use methods like `pause`, `unpause`, and `stop` to manage playback.</span>
+<span class="sd">	- Adjust settings such as volume or looping mode using class-level attributes and methods.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BotState.song_queue">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.song_queue">[docs]</a>
+	<span class="n">song_queue</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Queue of songs selected by the user</span></div>
+
+<div class="viewcode-block" id="BotState.current_song_playing">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.current_song_playing">[docs]</a>
+	<span class="n">current_song_playing</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Currently playing song, if any</span></div>
+
+<div class="viewcode-block" id="BotState._is_paused">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState._is_paused">[docs]</a>
+	<span class="n">_is_paused</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Indicates if playback is paused</span></div>
+
+<div class="viewcode-block" id="BotState._is_looping">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState._is_looping">[docs]</a>
+	<span class="n">_is_looping</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Indicates if looping is enabled for the current song</span></div>
+
+<div class="viewcode-block" id="BotState.logger">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.logger">[docs]</a>
+	<span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Logger for tracking bot commands and actions</span></div>
+
+<div class="viewcode-block" id="BotState.volume">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.volume">[docs]</a>
+	<span class="n">volume</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Default volume (50%)</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.log_command">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.log_command">[docs]</a>
+	<span class="k">def</span> <span class="nf">log_command</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Logs a command action with the specified message.</span>
+
+<span class="sd">		:param ctx: The context of the command, used to access author and command name.</span>
+<span class="sd">		:type ctx: Context</span>
+<span class="sd">		:param msg: The message to log, providing additional details.</span>
+<span class="sd">		:type msg: str</span>
+
+<span class="sd">		**Why**: Keeps track of user commands and their outcomes for debugging and auditing purposes.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ENIGMA (</span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> /</span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">command</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.log_and_send">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.log_and_send">[docs]</a>
+	<span class="k">async</span> <span class="k">def</span> <span class="nf">log_and_send</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Sends a message to the user and logs the command action.</span>
+
+<span class="sd">		:param ctx: The context of the command, used for logging and sending messages.</span>
+<span class="sd">		:type ctx: Context</span>
+<span class="sd">		:param msg: The message to send and log.</span>
+<span class="sd">		:type msg: str</span>
+
+<span class="sd">		**Why**: Ensures consistent communication with users while maintaining logs for actions taken.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># Send message to the Discord channel</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">log_command</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>  <span class="c1"># Log the command action</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.is_in_use">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.is_in_use">[docs]</a>
+	<span class="k">def</span> <span class="nf">is_in_use</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Checks if a song is currently playing.</span>
+
+<span class="sd">		:return: True if a song is playing, False otherwise.</span>
+<span class="sd">		:rtype: bool</span>
+
+<span class="sd">		**Why**: Determines whether the bot is active in playing music.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">current_song_playing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.is_paused">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.is_paused">[docs]</a>
+	<span class="k">def</span> <span class="nf">is_paused</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Checks if playback is paused.</span>
+
+<span class="sd">		:return: True if playback is paused, False otherwise.</span>
+<span class="sd">		:rtype: bool</span>
+
+<span class="sd">		**Why**: Provides the bot&#39;s current playback state for decision-making in commands.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.is_in_voice_channel">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.is_in_voice_channel">[docs]</a>
+	<span class="k">def</span> <span class="nf">is_in_voice_channel</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">voice_client</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Checks if the bot is connected to a voice channel.</span>
+
+<span class="sd">		:param voice_client: The Discord voice client instance.</span>
+<span class="sd">		:type voice_client: VoiceClient</span>
+<span class="sd">		:return: True if the bot is connected to a voice channel, False otherwise.</span>
+<span class="sd">		:rtype: bool</span>
+
+<span class="sd">		**Why**: Ensures that playback operations only occur when the bot is in a valid voice channel.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="n">voice_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.pause">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.pause">[docs]</a>
+	<span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">voice_client</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Pauses playback if a song is currently playing and the bot is connected</span>
+<span class="sd">        to a voice channel.</span>
+
+<span class="sd">		:param voice_client: The Discord voice client instance.</span>
+<span class="sd">		:type voice_client: VoiceClient</span>
+
+<span class="sd">		**Why**: Temporarily halts music playback without clearing the queue or playback state.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">voice_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">is_paused</span><span class="p">():</span>
+				<span class="n">voice_client</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>  <span class="c1"># Pause playback on the voice client</span>
+			<span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Update the pause state</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.unpause">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.unpause">[docs]</a>
+	<span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">voice_client</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Resumes playback if paused and the bot is connected to a voice channel.</span>
+
+<span class="sd">		:param voice_client: The Discord voice client instance.</span>
+<span class="sd">		:type voice_client: VoiceClient</span>
+
+<span class="sd">		**Why**: Restarts playback after a pause, maintaining the playback state.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="k">if</span> <span class="n">voice_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">is_paused</span><span class="p">():</span>
+				<span class="n">voice_client</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>  <span class="c1"># Resume playback on the voice client</span>
+			<span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Update the pause state</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.stop">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.stop">[docs]</a>
+	<span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">voice_client</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Stops playback and resets playback-related attributes.</span>
+
+<span class="sd">		:param voice_client: The Discord voice client instance.</span>
+<span class="sd">		:type voice_client: VoiceClient</span>
+
+<span class="sd">		**Why**: Ends playback and clears the current state when the bot leaves or stops music.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">voice_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_in_use</span><span class="p">():</span>
+			<span class="n">voice_client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop playback on the voice client</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">current_song_playing</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Reset the current song</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">_is_paused</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Reset the pause state</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.is_looping">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.is_looping">[docs]</a>
+	<span class="k">def</span> <span class="nf">is_looping</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Checks if the bot is in looping mode.</span>
+
+<span class="sd">		:return: True if looping is enabled, False otherwise.</span>
+<span class="sd">		:rtype: bool</span>
+
+<span class="sd">		**Why**: Identifies if the current song will be replayed after finishing.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_looping</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.set_is_looping">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.set_is_looping">[docs]</a>
+	<span class="k">def</span> <span class="nf">set_is_looping</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">is_looping</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Sets the looping state of the bot.</span>
+
+<span class="sd">		:param is_looping: The new looping state to set.</span>
+<span class="sd">		:type is_looping: bool</span>
+
+<span class="sd">		**Why**: Toggles looping mode for the currently playing song.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">cls</span><span class="o">.</span><span class="n">_is_looping</span> <span class="o">=</span> <span class="n">is_looping</span>  <span class="c1"># Update the looping state</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.set_volume">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.set_volume">[docs]</a>
+	<span class="k">def</span> <span class="nf">set_volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">voice_client</span><span class="p">,</span> <span class="n">volume</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Sets the playback volume.</span>
+
+<span class="sd">		:param voice_client: The Discord voice client instance.</span>
+<span class="sd">		:type voice_client: VoiceClient</span>
+<span class="sd">		:param volume: The new volume level (0.0 to 1.0).</span>
+<span class="sd">		:type volume: float</span>
+
+<span class="sd">		**Why**: Provides volume control for playback, ensuring user preferences are met.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+			<span class="bp">cls</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+			<span class="k">if</span> <span class="n">voice_client</span> <span class="ow">and</span> <span class="n">voice_client</span><span class="o">.</span><span class="n">source</span><span class="p">:</span>
+				<span class="n">voice_client</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+			<span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Volume set to </span><span class="si">{</span><span class="n">volume</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempted to set invalid volume: </span><span class="si">{</span><span class="n">volume</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+	<span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BotState.get_volume">
+<a class="viewcode-back" href="../../../autoapi/Enigma-docs/src/bot_state/index.html#Enigma-docs.src.bot_state.BotState.get_volume">[docs]</a>
+	<span class="k">def</span> <span class="nf">get_volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Gets the current playback volume.</span>
+
+<span class="sd">		:return: The current volume level (0.0 to 1.0).</span>
+<span class="sd">		:rtype: float</span>
+
+<span class="sd">		**Why**: Allows users to view the current volume level for playback.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">volume</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Enigma</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, CSC510 Group 6 Fall 2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
